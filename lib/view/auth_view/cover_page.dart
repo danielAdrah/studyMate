@@ -2,6 +2,7 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 import '../../common_widgets/custom_button.dart';
@@ -29,61 +30,66 @@ class _CoverPageState extends State<CoverPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 80),
+                SizedBox(height: 50),
                 FadeInDown(
-                  delay: Duration(milliseconds: 500),
-                  child: Container(
-                    width: 100,
-                    height: 80,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(height: 30),
-                Container(
-                  width: 150,
-                  height: 50,
-                  color: Colors.blue,
-                ),
-                SizedBox(height: 60),
-                Text(
-                  "Let us help you learn King Khalid \n University curriculum",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: TColor.black,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
+                    delay: Duration(milliseconds: 500),
+                    child: Image.asset("assets/img/uniCourse.png")),
+
+                FadeInDown(
+                    delay: Duration(milliseconds: 600),
+                    child: Image.asset("assets/img/logo.png")),
+
+                FadeInDown(
+                  delay: Duration(milliseconds: 650),
+                  child: Text(
+                    "Let us help you learn King Khalid \n University curriculum",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: TColor.black,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 SizedBox(height: 35),
-                Text(
-                  "Please sign in to start course",
-                  style: TextStyle(
-                    color: TColor.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                ZoomIn(
+                  delay: Duration(milliseconds: 750),
+                  child: Text(
+                    "Please sign in to start course",
+                    style: TextStyle(
+                      color: TColor.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
                 SizedBox(height: 35),
                 //this button will navigate you to the signup page
-                CustomButton(
-                  title: "Sign up",
-                  onTap: () {
-                    Get.off(SignUp());
-                  },
+                FadeInDown(
+                  delay: Duration(milliseconds: 900),
+                  child: CustomButton(
+                    title: "Sign up",
+                    onTap: () {
+                      Get.off(SignUp());
+                    },
+                  ),
                 ),
                 SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Already have an account?",
-                        style: TextStyle(fontWeight: FontWeight.w600)),
-                    TextButton(
-                      onPressed: () {
-                        //will navigate you to the login page
-                        Get.to(LogIn());
-                      },
-                      child: Text("Sign in"))
-                  ],
+                FadeInDown(
+                  delay: Duration(milliseconds: 950),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Already have an account?",
+                          style: TextStyle(fontWeight: FontWeight.w600)),
+                      TextButton(
+                          onPressed: () {
+                            //will navigate you to the login page
+                            Get.to(LogIn());
+                          },
+                          child: Text("Sign in"))
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -6,6 +6,7 @@ class CustomTextForm extends StatelessWidget {
   final String hinttext;
   final void Function()? onTap;
   IconData? suffixIcon;
+  Color? color;
   final bool secure;
   final TextEditingController mycontroller;
   final String? Function(String?)? validator;
@@ -16,6 +17,7 @@ class CustomTextForm extends StatelessWidget {
     required this.mycontroller,
     this.validator,
     this.suffixIcon,
+    this.color,
     required this.secure,
     this.onTap,
   });
@@ -33,6 +35,7 @@ class CustomTextForm extends StatelessWidget {
             onTap: onTap,
             child: Icon(
               suffixIcon,
+              color:color ,
             )),
         hintStyle: TextStyle(fontSize: 14, color: Colors.grey),
         contentPadding: EdgeInsets.symmetric(vertical: 2, horizontal: 20),

@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import '../../common_widgets/custom_button.dart';
 import '../../common_widgets/custome_text_field.dart';
 import '../../theme.dart';
-import '../main_nav_bar.dart';
 import 'sign_up.dart';
 
 class LogIn extends StatefulWidget {
@@ -33,11 +32,14 @@ class _LogInState extends State<LogIn> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 40),
+                SizedBox(height: 10),
+
+                Image.asset("assets/img/uniCourse.png",
+                    height: 80, width: 80, fit: BoxFit.fill),
                 FadeInDown(
                     delay: Duration(milliseconds: 500),
                     child: Image.asset("assets/img/logo.png",
-                        width: 200, height: 200)),
+                        width: 300, height: 300)),
                 SizedBox(height: 25),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 35),
@@ -123,7 +125,7 @@ class _LogInState extends State<LogIn> {
                     title: "Sign In",
                     //this method to perform the login operation
                     onTap: () {
-                      Get.off(MainNavBar());
+                  
 
                       if (formState.currentState!.validate()) {
                         //here we checked if the textfields have a value

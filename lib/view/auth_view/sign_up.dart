@@ -4,10 +4,11 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:studymate/view/acdemic_year.dart';
 import '../../common_widgets/custom_button.dart';
 import '../../common_widgets/custome_text_field.dart';
+import '../../controller/sign_up_controller.dart';
 import '../../theme.dart';
-import '../main_nav_bar.dart';
 import 'log_in.dart';
 
 class SignUp extends StatefulWidget {
@@ -18,7 +19,9 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  List<String> accountType = ["Student", "professor"];
   bool isSecure = false;
+  final signController = Get.put(SignUpController());
   GlobalKey<FormState> formState = GlobalKey<FormState>();
   TextEditingController fnameController = TextEditingController();
   TextEditingController lnameController = TextEditingController();
@@ -27,6 +30,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: TColor.background,
       body: SafeArea(
@@ -39,7 +43,7 @@ class _SignUpState extends State<SignUp> {
                 FadeInDown(
                     delay: Duration(milliseconds: 500),
                     child: SvgPicture.asset(
-                      "assets/img/undraw_secure-login_m11a.svg",
+                      "assets/img/Main img.svg",
                       height: 200,
                       width: 250,
                       fit: BoxFit.fill,
@@ -139,6 +143,62 @@ class _SignUpState extends State<SignUp> {
                             },
                           ),
                           SizedBox(height: 20),
+                          Text(
+                            "Account Type",
+                            style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          SizedBox(height: 10),
+                          Container(
+                            decoration: BoxDecoration(
+                                color: TColor.white,
+                                borderRadius: BorderRadius.circular(15)),
+                            width: width / 0.5,
+                            child: DropdownButton<String>(
+                              hint: Obx(() => signController
+                                      .accountType.value.isEmpty
+                                  ? Text(
+                                      " Choose your Account Type",
+                                      style: TextStyle(
+                                          color: TColor.black.withOpacity(0.5)),
+                                    )
+                                  : Text(signController.accountType.value,
+                                      style: TextStyle(color: TColor.black))),
+                              items: accountType.map((String service) {
+                                return DropdownMenuItem<String>(
+                                  value: service,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        service,
+                                        style: TextStyle(
+                                            color:
+                                                TColor.black.withOpacity(0.5)),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+
+                              iconSize: 30,
+                              icon: Icon(Icons.keyboard_arrow_down),
+                              isExpanded: true,
+
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              underline: Text(
+                                "",
+                                style: TextStyle(color: TColor.white),
+                              ),
+                              onChanged: (String? val) {
+                                if (val != null) {
+                                  signController.accountType.value = val;
+                                  print(signController.accountType.value);
+                                }
+                              }, //o Implement your logic here when a selection changes
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -151,7 +211,7 @@ class _SignUpState extends State<SignUp> {
                     title: "Sign up",
                     //this method to perform the login operation
                     onTap: () {
-                      Get.off(MainNavBar());
+                      Get.off(AcdemicYear());
                       if (formState.currentState!.validate()) {
                       } else {
                         print("error");
