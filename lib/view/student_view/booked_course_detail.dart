@@ -3,8 +3,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:studymate/common_widgets/custom_button.dart';
-import 'package:studymate/common_widgets/custome_text_field.dart';
-
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../../common_widgets/custom_app_bar.dart';
 import '../../theme.dart';
 
@@ -65,10 +64,20 @@ class _BookedCourseDetailState extends State<BookedCourseDetail> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(height: 50),
-                        Container(
-                          width: 100,
-                          height: 10,
-                          color: Colors.yellow,
+                        RatingBar.builder(
+                          initialRating: 1,
+                          minRating: 1,
+                          direction: Axis.horizontal,
+                          allowHalfRating: true,
+                          itemCount: 5,
+                          itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                          itemBuilder: (context, _) => Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          onRatingUpdate: (rating) {
+                            print(rating);
+                          },
                         ),
                         SizedBox(height: 30),
                         Padding(

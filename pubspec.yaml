@@ -38,6 +38,7 @@ dependencies:
   get: ^4.6.6
   animate_do: ^3.3.4
   flutter_svg: ^2.0.17
+  flutter_rating_bar: ^4.0.1
 
 dev_dependencies:
   flutter_test:

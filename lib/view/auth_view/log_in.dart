@@ -41,8 +41,8 @@ class _LogInState extends State<LogIn> {
                 ),
                 FadeInDown(
                     delay: Duration(milliseconds: 600),
-                    child: Image.asset("assets/img/logo.jpg",
-                        width: 300, height: 300)),
+                    child: Image.asset("assets/img/logo2.png",
+                        width: 320, height: 320)),
                 SizedBox(height: 25),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 35),

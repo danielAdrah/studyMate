@@ -2,9 +2,7 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-
 import '../../common_widgets/custom_button.dart';
 import '../../theme.dart';
 import 'log_in.dart';
@@ -32,13 +30,15 @@ class _CoverPageState extends State<CoverPage> {
               children: [
                 SizedBox(height: 50),
                 FadeInDown(
-                    delay: Duration(milliseconds: 500),
-                    child: Image.asset("assets/img/uniCourse.png")),
+                  delay: Duration(milliseconds: 500),
+                  child: Image.asset("assets/img/uniCourse.png",
+                      height: 180, width: 180),
+                ),
 
                 FadeInDown(
                     delay: Duration(milliseconds: 600),
-                    child: Image.asset("assets/img/logo.jpg",
-                        height: 280, width: 280, fit: BoxFit.fill)),
+                    child: Image.asset("assets/img/logo2.png",
+                        height: 320, width: 320, fit: BoxFit.fill)),
 
                 FadeInDown(
                   delay: Duration(milliseconds: 650),

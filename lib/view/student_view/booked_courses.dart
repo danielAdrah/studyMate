@@ -50,7 +50,7 @@ class _BookedCoursesState extends State<BookedCourses> {
                   delay: Duration(milliseconds: 750),
                   child: SizedBox(
                     width: double.infinity,
-                    height: 160,
+                    height: 150,
                     child: ListView.builder(
                         //this is a list if booked course by the user
                         physics: BouncingScrollPhysics(),
