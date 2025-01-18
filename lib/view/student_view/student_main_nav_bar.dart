@@ -1,8 +1,10 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../theme.dart';
+import 'booked_courses.dart';
 import 'explore_view.dart';
 
 class StudentMainNavBar extends StatefulWidget {
@@ -39,10 +41,15 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
                       currentTabView = ExploreView();
                     });
                   },
-                  icon: Image.asset(
-                    "assets/img/exploreIcon.png",
+                  icon: SvgPicture.asset(
+                    "assets/img/explore.svg",
                     color: selectTab == 0 ? TColor.primary : Colors.grey,
-                  )),
+                  )
+                  //  Image.asset(
+                  //   "assets/img/exploreIcon.png",
+                  //   color: selectTab == 0 ? TColor.primary : Colors.grey,
+                  // ),
+                  ),
               IconButton(
                   onPressed: () {
                     setState(() {
@@ -50,8 +57,8 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
                       currentTabView = Container(color: Colors.red);
                     });
                   },
-                  icon: Image.asset(
-                    "assets/img/notiIcon.png",
+                  icon: SvgPicture.asset(
+                    "assets/img/noti.svg",
                     color: selectTab == 1 ? TColor.primary : Colors.grey,
                   )),
               IconButton(
@@ -61,19 +68,19 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
                       currentTabView = Container();
                     });
                   },
-                  icon: Image.asset(
-                    "assets/img/chatIcon.png",
+                  icon: SvgPicture.asset(
+                    "assets/img/chat.svg",
                     color: selectTab == 2 ? TColor.primary : Colors.grey,
                   )),
               IconButton(
                   onPressed: () {
                     setState(() {
                       selectTab = 3;
-                      currentTabView = Container(color: Colors.blue);
+                      currentTabView = BookedCourses();
                     });
                   },
-                  icon: Image.asset(
-                    "assets/img/courseIcon.png",
+                  icon: SvgPicture.asset(
+                    "assets/img/course.svg",
                     color: selectTab == 3 ? TColor.primary : Colors.grey,
                   )),
             ],

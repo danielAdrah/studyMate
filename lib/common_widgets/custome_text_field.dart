@@ -35,7 +35,7 @@ class CustomTextForm extends StatelessWidget {
             onTap: onTap,
             child: Icon(
               suffixIcon,
-              color:color ,
+              color: color,
             )),
         hintStyle: TextStyle(fontSize: 14, color: Colors.grey),
         contentPadding: EdgeInsets.symmetric(vertical: 2, horizontal: 20),

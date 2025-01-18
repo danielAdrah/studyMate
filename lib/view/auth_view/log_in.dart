@@ -34,11 +34,14 @@ class _LogInState extends State<LogIn> {
               children: [
                 SizedBox(height: 10),
 
-                Image.asset("assets/img/uniCourse.png",
-                    height: 80, width: 80, fit: BoxFit.fill),
                 FadeInDown(
-                    delay: Duration(milliseconds: 500),
-                    child: Image.asset("assets/img/logo.png",
+                  delay: Duration(milliseconds: 500),
+                  child: Image.asset("assets/img/uniCourse.png",
+                      height: 80, width: 80, fit: BoxFit.fill),
+                ),
+                FadeInDown(
+                    delay: Duration(milliseconds: 600),
+                    child: Image.asset("assets/img/logo.jpg",
                         width: 300, height: 300)),
                 SizedBox(height: 25),
                 Padding(
@@ -46,7 +49,7 @@ class _LogInState extends State<LogIn> {
                   child: Form(
                     key: formState,
                     child: FadeInDown(
-                      delay: Duration(milliseconds: 600),
+                      delay: Duration(milliseconds: 700),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,8 +128,6 @@ class _LogInState extends State<LogIn> {
                     title: "Sign In",
                     //this method to perform the login operation
                     onTap: () {
-                  
-
                       if (formState.currentState!.validate()) {
                         //here we checked if the textfields have a value
                         //if it does it will excute this block
@@ -139,18 +140,21 @@ class _LogInState extends State<LogIn> {
                     },
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Don't have an account?",
-                        style: TextStyle(fontWeight: FontWeight.w600)),
-                    TextButton(
-                        onPressed: () {
-                          //will navigate you to the login page
-                          Get.to(SignUp());
-                        },
-                        child: Text("Sign up"))
-                  ],
+                FadeInDown(
+                  delay: Duration(milliseconds: 900),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Don't have an account?",
+                          style: TextStyle(fontWeight: FontWeight.w600)),
+                      TextButton(
+                          onPressed: () {
+                            //will navigate you to the login page
+                            Get.to(SignUp());
+                          },
+                          child: Text("Sign up"))
+                    ],
+                  ),
                 ),
               ],
             ),

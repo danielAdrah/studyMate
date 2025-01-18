@@ -4,7 +4,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:studymate/view/acdemic_year.dart';
+import 'package:studymate/view/student_view/acdemic_year.dart';
 import '../../common_widgets/custom_button.dart';
 import '../../common_widgets/custome_text_field.dart';
 import '../../controller/sign_up_controller.dart';
@@ -199,6 +199,7 @@ class _SignUpState extends State<SignUp> {
                               }, //o Implement your logic here when a selection changes
                             ),
                           ),
+                     
                         ],
                       ),
                     ),

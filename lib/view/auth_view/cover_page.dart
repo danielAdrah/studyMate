@@ -37,7 +37,8 @@ class _CoverPageState extends State<CoverPage> {
 
                 FadeInDown(
                     delay: Duration(milliseconds: 600),
-                    child: Image.asset("assets/img/logo.png")),
+                    child: Image.asset("assets/img/logo.jpg",
+                        height: 280, width: 280, fit: BoxFit.fill)),
 
                 FadeInDown(
                   delay: Duration(milliseconds: 650),
