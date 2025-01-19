@@ -2,8 +2,10 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../theme.dart';
+import '../view/student_view/profile_view.dart';
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({
@@ -39,8 +41,16 @@ class CustomAppBar extends StatelessWidget {
         ),
         //later will change it when the user selects new image
         FadeInRight(
-            delay: Duration(milliseconds: 500),
-            child: Container(child: Image.asset(avatar))),
+          delay: Duration(milliseconds: 500),
+          child: InkWell(
+            onTap: () {
+              Get.to(ProfileView());
+            },
+            child: Container(
+              child: Image.asset(avatar),
+            ),
+          ),
+        ),
       ],
     );
   }
