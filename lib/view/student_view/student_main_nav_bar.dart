@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../theme.dart';
 import 'booked_courses.dart';
+import 'chat_view.dart';
 import 'explore_view.dart';
 import 'notification_view.dart';
 
@@ -66,7 +67,7 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
                   onPressed: () {
                     setState(() {
                       selectTab = 2;
-                      currentTabView = Container();
+                      currentTabView = ChatView();
                     });
                   },
                   icon: SvgPicture.asset(
