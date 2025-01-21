@@ -76,7 +76,7 @@ class _ExploreViewState extends State<ExploreView> {
                         }),
                   ),
                 ),
-               
+
                 SizedBox(height: 15),
                 FadeInDown(
                   delay: Duration(milliseconds: 850),

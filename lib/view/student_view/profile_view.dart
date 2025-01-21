@@ -1,9 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sort_child_properties_last
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../common_widgets/custome_text_field.dart';
+import '../../controller/cours_controller.dart';
 import '../../theme.dart';
 
 class ProfileView extends StatefulWidget {
@@ -14,9 +19,39 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
+  final controller = Get.put(CoursController());
   final newName = TextEditingController();
   final newMail = TextEditingController();
   final newPass = TextEditingController();
+
+  // File? file;
+  // getImage() async {
+  //   final imagePicker = ImagePicker();
+  //   XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
+  //   file = File(image!.path);
+  //   setState(() {});
+  // }
+
+  final GetStorage storage = GetStorage();
+  File? file;
+  String? imagePath;
+
+  Future<void> getImage() async {
+    final imagePicker = ImagePicker();
+    XFile? pickedImage =
+        await imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      file = File(pickedImage.path);
+      imagePath = file!.path;
+
+      // Store the image path in SharedPreferences
+      final img = await storage.write('imagePath', imagePath!);
+
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,41 +62,45 @@ class _ProfileViewState extends State<ProfileView> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 40),
-              Stack(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: TColor.primary,
-                    ),
-                    child: CircleAvatar(
-                      radius: 70,
-                      backgroundImage: AssetImage("assets/img/user.png"),
-                      // controller.imagePath.value ==
-                      //         null
-                      //     ? AssetImage("assets/img/u1.png")
-                      //     : FileImage(File(controller.imagePath.value!))
-                      //         as ImageProvider<Object>?
-                    ),
-                  ),
-                  Positioned(
-                    right: 10,
-                    bottom: 1,
-                    child: InkWell(
-                      onTap: () {
-                        //choose a pic
-                      },
+              Obx(
+                () => Stack(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: TColor.primary,
+                      ),
                       child: CircleAvatar(
-                        backgroundColor: TColor.white,
-                        radius: 20,
-                        child: Icon(
-                          Icons.camera_alt,
+                          radius: 70,
+                          backgroundImage: controller.imagePath.value == null
+                              ? AssetImage("assets/img/user.png")
+                              : FileImage(File(controller.imagePath.value!))
+                                  as ImageProvider<Object>?
+                          //  file == null
+                          //     ? AssetImage("assets/img/user.png")
+                          //     : FileImage(File(imagePath ?? '')),
+                          ),
+                    ),
+                    Positioned(
+                      right: 10,
+                      bottom: 1,
+                      child: InkWell(
+                        onTap: () {
+                          //choose a pic
+                          controller.uploadImage();
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: TColor.white,
+                          radius: 20,
+                          child: Icon(
+                            Icons.camera_alt,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               SizedBox(height: 30),
               Padding(

@@ -1,13 +1,16 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors
 
+import 'dart:io';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:get_storage/get_storage.dart';
+import '../controller/cours_controller.dart';
 import '../theme.dart';
 import '../view/student_view/profile_view.dart';
 
-class CustomAppBar extends StatelessWidget {
+class CustomAppBar extends StatefulWidget {
   const CustomAppBar({
     super.key,
     required this.name,
@@ -15,6 +18,20 @@ class CustomAppBar extends StatelessWidget {
   });
   final String name;
   final String avatar;
+
+  @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  final controller = Get.put(CoursController());
+
+  final GetStorage storage = GetStorage();
+  @override
+  void initState() {
+    super.initState();
+    var img = storage.read('imagePath');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +48,7 @@ class CustomAppBar extends StatelessWidget {
                       color: TColor.black,
                       fontSize: 22,
                       fontWeight: FontWeight.w700)),
-              Text(name,
+              Text(widget.name,
                   style: TextStyle(
                       color: TColor.black,
                       fontSize: 16,
@@ -46,8 +63,13 @@ class CustomAppBar extends StatelessWidget {
             onTap: () {
               Get.to(ProfileView());
             },
-            child: Container(
-              child: Image.asset(avatar),
+            child: Obx(
+              () => CircleAvatar(
+                  radius: 30,
+                  backgroundImage: controller.imagePath.value == null
+                      ? AssetImage("assets/img/user.png")
+                      : FileImage(File(controller.imagePath.value!))
+                          as ImageProvider<Object>?),
             ),
           ),
         ),

@@ -67,50 +67,53 @@ class _CourseReservationState extends State<CourseReservation> {
                       ),
                       SizedBox(width: 20),
                       //this a dropDown list to choose a professor
-                      Container(
-                        decoration: BoxDecoration(
-                            color: TColor.white,
-                            borderRadius: BorderRadius.circular(15)),
-                        width: 200,
-                        child: DropdownButton<String>(
-                          hint: Obx(() => coursCont.professorName.value.isEmpty
-                              ? Text(
-                                  " ",
-                                  style: TextStyle(
-                                      color: TColor.black.withOpacity(0.5)),
-                                )
-                              : Text(coursCont.professorName.value,
-                                  style: TextStyle(color: TColor.black))),
-                          items: professor.map((String service) {
-                            return DropdownMenuItem<String>(
-                              value: service,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    service,
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: TColor.white,
+                              borderRadius: BorderRadius.circular(15)),
+                          // width: 100,
+                          child: DropdownButton<String>(
+                            hint: Obx(() => coursCont
+                                    .professorName.value.isEmpty
+                                ? Text(
+                                    " ",
                                     style: TextStyle(
                                         color: TColor.black.withOpacity(0.5)),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
+                                  )
+                                : Text(coursCont.professorName.value,
+                                    style: TextStyle(color: TColor.black))),
+                            items: professor.map((String service) {
+                              return DropdownMenuItem<String>(
+                                value: service,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      service,
+                                      style: TextStyle(
+                                          color: TColor.black.withOpacity(0.5)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
 
-                          iconSize: 30,
-                          icon: Icon(Icons.keyboard_arrow_down),
-                          isExpanded: true,
+                            iconSize: 30,
+                            icon: Icon(Icons.keyboard_arrow_down),
+                            isExpanded: true,
 
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          underline: Text(
-                            "",
-                            style: TextStyle(color: TColor.white),
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            underline: Text(
+                              "",
+                              style: TextStyle(color: TColor.white),
+                            ),
+                            onChanged: (String? val) {
+                              if (val != null) {
+                                coursCont.professorName.value = val;
+                                print(coursCont.professorName.value);
+                              }
+                            }, //o Implement your logic here when a selection changes
                           ),
-                          onChanged: (String? val) {
-                            if (val != null) {
-                              coursCont.professorName.value = val;
-                              print(coursCont.professorName.value);
-                            }
-                          }, //o Implement your logic here when a selection changes
                         ),
                       ),
                     ],
@@ -131,10 +134,12 @@ class _CourseReservationState extends State<CourseReservation> {
                       ),
                       SizedBox(width: 60),
                       //====to select course date
-                      DateTextField(
-                        controller: courseDate,
-                        onTap: showDate,
-                        width: 200,
+                      Expanded(
+                        child: DateTextField(
+                          controller: courseDate,
+                          onTap: showDate,
+                          width: 200,
+                        ),
                       ),
                     ],
                   ),
@@ -154,10 +159,12 @@ class _CourseReservationState extends State<CourseReservation> {
                       ),
                       SizedBox(width: 60),
                       //====to select course time
-                      DateTextField(
-                        controller: courseTime,
-                        onTap: showTimePicke,
-                        width: 200,
+                      Expanded(
+                        child: DateTextField(
+                          controller: courseTime,
+                          onTap: showTimePicke,
+                          width: 200,
+                        ),
                       ),
                     ],
                   ),
