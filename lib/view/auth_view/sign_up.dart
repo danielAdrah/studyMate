@@ -9,6 +9,7 @@ import '../../common_widgets/custom_button.dart';
 import '../../common_widgets/custome_text_field.dart';
 import '../../controller/sign_up_controller.dart';
 import '../../theme.dart';
+import '../professor_view/professor_main_nav_bar.dart';
 import 'log_in.dart';
 
 class SignUp extends StatefulWidget {
@@ -199,7 +200,6 @@ class _SignUpState extends State<SignUp> {
                               }, //o Implement your logic here when a selection changes
                             ),
                           ),
-                     
                         ],
                       ),
                     ),
@@ -212,8 +212,12 @@ class _SignUpState extends State<SignUp> {
                     title: "Sign up",
                     //this method to perform the login operation
                     onTap: () {
-                      Get.off(AcdemicYear());
                       if (formState.currentState!.validate()) {
+                        if (signController.accountType.value == "Student") {
+                          Get.off(AcdemicYear());
+                        } else {
+                          Get.off(ProfessorMainNavBar());
+                        }
                       } else {
                         print("error");
                       }

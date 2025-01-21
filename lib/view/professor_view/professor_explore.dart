@@ -2,23 +2,21 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import '../../common_widgets/course_cell.dart';
 import '../../common_widgets/custom_app_bar.dart';
 import '../../common_widgets/custome_text_field.dart';
 import '../../common_widgets/professor_cell.dart';
 import '../../theme.dart';
-import 'community_view/first_year.dart';
-import 'course_reservation.dart';
 
-class ExploreView extends StatefulWidget {
-  const ExploreView({super.key});
+
+class ProfessorExplore extends StatefulWidget {
+  const ProfessorExplore({super.key});
 
   @override
-  State<ExploreView> createState() => _ExploreViewState();
+  State<ProfessorExplore> createState() => _ProfessorExploreState();
 }
 
-class _ExploreViewState extends State<ExploreView> {
+class _ProfessorExploreState extends State<ProfessorExplore> {
   final searchCont = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -106,89 +104,14 @@ class _ExploreViewState extends State<ExploreView> {
                             courseName: "Programming",
                             courseField: "something",
                             onTap: () {
-                              Get.to(CourseReservation());
+                            
                             },
                           );
                         }),
                   ),
                 ),
                 SizedBox(height: 20),
-                FadeInDown(
-                  delay: Duration(milliseconds: 1000),
-                  child: Container(
-                    width: double.infinity,
-                    height: 250,
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(1, 1.5),
-                          blurRadius: 0.2,
-                          blurStyle: BlurStyle.outer,
-                        )
-                      ],
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          height: 250,
-                          width: 150,
-                          decoration: BoxDecoration(
-                            color: TColor.primary,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 15),
-                            Text(
-                              "Community",
-                              style: TextStyle(
-                                color: TColor.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            Row(
-                              children: [
-                                CommunityBtn(
-                                  title: "First Year",
-                                  onTap: () {
-                                    Get.to(FirstYear());
-                                  },
-                                ),
-                                SizedBox(width: 3),
-                                CommunityBtn(
-                                  title: "Second Year",
-                                  onTap: () {},
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 40),
-                            Row(
-                              children: [
-                                CommunityBtn(
-                                  title: "Third Year",
-                                  onTap: () {},
-                                ),
-                                SizedBox(width: 3),
-                                CommunityBtn(
-                                  title: "Fourth Year",
-                                  onTap: () {},
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                
                 SizedBox(height: 30),
               ],
             ),
