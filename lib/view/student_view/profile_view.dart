@@ -4,8 +4,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../common_widgets/custome_text_field.dart';
 import '../../controller/cours_controller.dart';
@@ -24,33 +22,8 @@ class _ProfileViewState extends State<ProfileView> {
   final newMail = TextEditingController();
   final newPass = TextEditingController();
 
-  // File? file;
-  // getImage() async {
-  //   final imagePicker = ImagePicker();
-  //   XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
-  //   file = File(image!.path);
-  //   setState(() {});
-  // }
-
-  final GetStorage storage = GetStorage();
-  File? file;
-  String? imagePath;
-
-  Future<void> getImage() async {
-    final imagePicker = ImagePicker();
-    XFile? pickedImage =
-        await imagePicker.pickImage(source: ImageSource.gallery);
-
-    if (pickedImage != null) {
-      file = File(pickedImage.path);
-      imagePath = file!.path;
-
-      // Store the image path in SharedPreferences
-      final img = await storage.write('imagePath', imagePath!);
-
-      setState(() {});
-    }
-  }
+ 
+  
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +50,7 @@ class _ProfileViewState extends State<ProfileView> {
                               ? AssetImage("assets/img/user.png")
                               : FileImage(File(controller.imagePath.value!))
                                   as ImageProvider<Object>?
-                          //  file == null
-                          //     ? AssetImage("assets/img/user.png")
-                          //     : FileImage(File(imagePath ?? '')),
+                         
                           ),
                     ),
                     Positioned(

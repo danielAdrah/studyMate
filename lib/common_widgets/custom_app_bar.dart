@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import '../controller/cours_controller.dart';
 import '../theme.dart';
 import '../view/student_view/profile_view.dart';
@@ -26,12 +25,7 @@ class CustomAppBar extends StatefulWidget {
 class _CustomAppBarState extends State<CustomAppBar> {
   final controller = Get.put(CoursController());
 
-  final GetStorage storage = GetStorage();
-  @override
-  void initState() {
-    super.initState();
-    var img = storage.read('imagePath');
-  }
+  
 
   @override
   Widget build(BuildContext context) {
