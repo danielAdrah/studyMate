@@ -70,7 +70,8 @@ class _CoverPageState extends State<CoverPage> {
                   delay: Duration(milliseconds: 900),
                   child: CustomButton(
                     title: "Sign up",
-                    onTap: () {
+                    onTap: ()  {
+                     
                       Get.off(SignUp());
                     },
                   ),

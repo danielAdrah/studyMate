@@ -2,12 +2,14 @@
 
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../common_widgets/custome_text_field.dart';
 import '../../controller/cours_controller.dart';
 import '../../theme.dart';
+import '../auth_view/log_in.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -21,9 +23,6 @@ class _ProfileViewState extends State<ProfileView> {
   final newName = TextEditingController();
   final newMail = TextEditingController();
   final newPass = TextEditingController();
-
- 
-  
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +48,7 @@ class _ProfileViewState extends State<ProfileView> {
                           backgroundImage: controller.imagePath.value == null
                               ? AssetImage("assets/img/user.png")
                               : FileImage(File(controller.imagePath.value!))
-                                  as ImageProvider<Object>?
-                         
-                          ),
+                                  as ImageProvider<Object>?),
                     ),
                     Positioned(
                       right: 10,
@@ -203,7 +200,11 @@ class _ProfileViewState extends State<ProfileView> {
                           SizedBox(height: 40),
                           InfoTile(
                             title: "Log Out",
-                            onTap: () {},
+                            onTap: () async {
+                              //this is for signout
+                              await FirebaseAuth.instance.signOut();
+                              Get.off(LogIn());
+                            },
                             child: Icon(
                               Icons.arrow_forward_ios,
                               size: 20,

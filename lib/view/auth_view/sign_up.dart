@@ -1,16 +1,16 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, body_might_complete_normally_nullable, avoid_print, unused_local_variable
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, body_might_complete_normally_nullable, avoid_print, unused_local_variable, use_build_context_synchronously
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:studymate/view/student_view/acdemic_year.dart';
 import '../../common_widgets/custom_button.dart';
 import '../../common_widgets/custome_text_field.dart';
 import '../../controller/sign_up_controller.dart';
 import '../../theme.dart';
-import '../professor_view/professor_main_nav_bar.dart';
 import 'log_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -28,6 +28,28 @@ class _SignUpState extends State<SignUp> {
   TextEditingController lnameController = TextEditingController();
   TextEditingController mailController = TextEditingController();
   TextEditingController passController = TextEditingController();
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Future<void> addUserToFirestore(
+      User user, String accountType, nameController) async {
+    DocumentReference? docRef;
+
+    if (accountType == "Student") {
+      docRef = firestore.collection("students").doc(user.uid);
+    } else if (accountType == "professor") {
+      docRef = firestore.collection("professors").doc(user.uid);
+    }
+
+    await docRef!.set({
+      'uid': user.uid,
+      'email': user.email!,
+      'name': nameController,
+      'role': accountType,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -182,11 +204,9 @@ class _SignUpState extends State<SignUp> {
                                   ),
                                 );
                               }).toList(),
-
                               iconSize: 30,
                               icon: Icon(Icons.keyboard_arrow_down),
                               isExpanded: true,
-
                               padding: EdgeInsets.symmetric(horizontal: 12),
                               underline: Text(
                                 "",
@@ -197,7 +217,7 @@ class _SignUpState extends State<SignUp> {
                                   signController.accountType.value = val;
                                   print(signController.accountType.value);
                                 }
-                              }, //o Implement your logic here when a selection changes
+                              },
                             ),
                           ),
                         ],
@@ -211,15 +231,50 @@ class _SignUpState extends State<SignUp> {
                   child: CustomButton(
                     title: "Sign up",
                     //this method to perform the login operation
-                    onTap: () {
+                    onTap: () async {
                       if (formState.currentState!.validate()) {
-                        if (signController.accountType.value == "Student") {
-                          Get.off(AcdemicYear());
-                        } else {
-                          Get.off(ProfessorMainNavBar());
+                        try {
+                          final credential = await FirebaseAuth.instance
+                              .createUserWithEmailAndPassword(
+                            email: mailController.text,
+                            password: passController.text,
+                          );
+
+                          //after the user creates an account a link is send to it
+                          FirebaseAuth.instance.currentUser!
+                              .sendEmailVerification();
+
+                          await addUserToFirestore(
+                              credential.user!,
+                              signController.accountType.value,
+                              fnameController.text);
+
+                          Get.to(LogIn());
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'weak-password') {
+                            print('The password provided is too weak.');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'The password provided is too weak')),
+                            );
+                          } else if (e.code == 'email-already-in-use') {
+                            print('The account already exists for that email.');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'The account already exists for that email.')),
+                            );
+                          }
+                        } catch (e) {
+                          print(e);
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.toString())),
+                          );
                         }
                       } else {
-                        print("error");
+                        print("noooo");
                       }
                     },
                   ),

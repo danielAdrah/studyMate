@@ -1,5 +1,95 @@
+// ignore_for_file: avoid_print, unused_local_variable, prefer_const_constructors, use_build_context_synchronously, empty_catches, unused_catch_clause, unnecessary_null_in_if_null_operators
+
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../view/professor_view/professor_main_nav_bar.dart';
+import '../view/student_view/student_main_nav_bar.dart';
 
 class SignUpController extends GetxController {
   RxString accountType = "".obs;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //======
+
+  Future<String?> determineUserRole(String uid) async {
+    try {
+      List<Map<String, dynamic>> allDocuments = await FirebaseFirestore.instance
+          .collection('students')
+          .doc(uid)
+          .get()
+          .then((value) => [value.data() ?? {}])
+          .then((value) async => [
+                ...value,
+                ...(await FirebaseFirestore.instance
+                    .collection('professors')
+                    .doc(uid)
+                    .get()
+                    .then((doc) => [doc.data() ?? {}]))
+              ]);
+
+      String? role = allDocuments.firstWhereOrNull(
+              (element) => element.containsKey('role'))?['role'] ??
+          null;
+
+      if (role == null) {
+        print('User not found in either Students or Professors collection');
+      }
+
+      return role;
+    } catch (e) {
+      print('Error fetching user role: $e');
+      return null;
+    }
+  }
+//===========
+  Future logIn(String mail, passWord, BuildContext context) async {
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: mail,
+        password: passWord,
+      );
+      print("done");
+
+      if (credential.user!.emailVerified) {
+        //here we check if the user has verified his account
+        //if he so we will take hin to the home page
+        //if he is not we will tell him to do it
+
+        String? userRole = await determineUserRole(credential.user!.uid);
+
+        if (userRole == "Student") {
+          Get.off(StudentMainNavBar());
+        } else if (userRole == "professor") {
+          Get.off(ProfessorMainNavBar());
+        } else {
+          print("wrong role");
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please Verify your account first!')),
+        );
+        print("please verfiy first");
+      }
+    } on FirebaseAuthException catch (e) {
+      print("not done");
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('user-not-found')),
+        );
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Wrong password provided for that user.')),
+        );
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Incorrect User credentials")),
+      );
+    }
+  }
 }
