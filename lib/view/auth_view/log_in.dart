@@ -67,186 +67,140 @@ class _LogInState extends State<LogIn> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 10),
+            child: Obx(
+              () => Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 10),
 
-                FadeInDown(
-                  delay: Duration(milliseconds: 500),
-                  child: Image.asset("assets/img/uniCourse.png",
-                      height: 80, width: 80, fit: BoxFit.fill),
-                ),
-                FadeInDown(
-                    delay: Duration(milliseconds: 600),
-                    child: Image.asset("assets/img/logo2.png",
-                        width: 320, height: 320)),
-                SizedBox(height: 25),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 35),
-                  child: Form(
-                    key: formState,
-                    child: FadeInDown(
-                      delay: Duration(milliseconds: 700),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Email address",
-                            style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 10),
-                          CustomTextForm(
-                            secure: false,
-                            hinttext: "Enter your e-mail",
-                            mycontroller: mailController,
-                            validator: (val) {
-                              if (val == "") {
-                                return "Can't be empty";
-                              }
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "Password",
-                            style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 10),
-                          CustomTextForm(
-                            secure: isSecure,
-                            hinttext: "Enter your password",
-                            mycontroller: passController,
-                            onTap: () {
-                              setState(() {
-                                isSecure = !isSecure;
-                              });
-                            },
-                            suffixIcon: isSecure
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            validator: (val) {
-                              if (val == "") {
-                                return "Can't be empty";
-                              }
-                            },
-                          ),
-                        ],
+                  FadeInDown(
+                    delay: Duration(milliseconds: 500),
+                    child: Image.asset("assets/img/uniCourse.png",
+                        height: 80, width: 80, fit: BoxFit.fill),
+                  ),
+                  FadeInDown(
+                      delay: Duration(milliseconds: 600),
+                      child: Image.asset("assets/img/logo2.png",
+                          width: 320, height: 320)),
+                  SizedBox(height: 25),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 35),
+                    child: Form(
+                      key: formState,
+                      child: FadeInDown(
+                        delay: Duration(milliseconds: 700),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Email address",
+                              style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(height: 10),
+                            CustomTextForm(
+                              secure: false,
+                              hinttext: "Enter your e-mail",
+                              mycontroller: mailController,
+                              validator: (val) {
+                                if (val == "") {
+                                  return "Can't be empty";
+                                }
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                              "Password",
+                              style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(height: 10),
+                            CustomTextForm(
+                              secure: isSecure,
+                              hinttext: "Enter your password",
+                              mycontroller: passController,
+                              onTap: () {
+                                setState(() {
+                                  isSecure = !isSecure;
+                                });
+                              },
+                              suffixIcon: isSecure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              validator: (val) {
+                                if (val == "") {
+                                  return "Can't be empty";
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                // FadeInDown(
-                //   delay: Duration(milliseconds: 700),
-                //   child: Padding(
-                //     padding: const EdgeInsets.only(left: 220),
-                //     child: TextButton(
-                //       //this method to change the password
-                //       onPressed: () {},
-                //       child: Text(
-                //         "Forget password?",
-                //         style: TextStyle(
-                //           fontSize: 12,
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                  // FadeInDown(
+                  //   delay: Duration(milliseconds: 700),
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.only(left: 220),
+                  //     child: TextButton(
+                  //       //this method to change the password
+                  //       onPressed: () {},
+                  //       child: Text(
+                  //         "Forget password?",
+                  //         style: TextStyle(
+                  //           fontSize: 12,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
 
-                SizedBox(height: 35),
-                FadeInDown(
-                  delay: Duration(milliseconds: 800),
-                  child: CustomButton(
-                    title: "Sign In",
-                    //this method to perform the login operation
-                    onTap: () async {
-                      if (formState.currentState!.validate()) {
-                        //here we checked if the textfields have a value
-                        //if it does it will excute this block
-                        //here we will add the login method
+                  SizedBox(height: 35),
+                  controller.logInLoading.value
+                      ? CircularProgressIndicator(color: TColor.primary)
+                      : FadeInDown(
+                          delay: Duration(milliseconds: 800),
+                          child: CustomButton(
+                            title: "Sign In",
+                            //this method to perform the login operation
+                            onTap: () async {
+                              if (formState.currentState!.validate()) {
+                                //here we checked if the textfields have a value
+                                //if it does it will excute this block
+                                //here we will add the login method
 
-                        controller.logIn(
-                            mailController.text, passController.text, context);
-
-                        // try {
-                        //   final credential = await FirebaseAuth.instance
-                        //       .signInWithEmailAndPassword(
-                        //     email: mailController.text,
-                        //     password: passController.text,
-                        //   );
-                        //   if (credential.user!.emailVerified) {
-                        //     //here we check if the user has verified his account
-                        //     //if he so we will take hin to the home page
-                        //     //if he is not we will tell him to do it
-
-                        //     String? userRole =
-                        //         await determineUserRole(credential.user!.uid);
-
-                        //     if (userRole == "Student") {
-                        //       Get.off(StudentMainNavBar());
-                        //     } else if (userRole == "professor") {
-                        //       Get.off(ProfessorMainNavBar());
-                        //     } else {
-                        //       print("wrong role");
-                        //     }
-                        //   } else {
-                        //     ScaffoldMessenger.of(context).showSnackBar(
-                        //       SnackBar(
-                        //           content: Text(
-                        //               'Please Verify your account first!')),
-                        //     );
-                        //     print("please verfiy first");
-                        //   }
-                        // } on FirebaseAuthException catch (e) {
-                        //   if (e.code == 'user-not-found') {
-                        //     print('No user found for that email.');
-                        //     ScaffoldMessenger.of(context).showSnackBar(
-                        //       SnackBar(content: Text('user-not-found')),
-                        //     );
-                        //   } else if (e.code == 'wrong-password') {
-                        //     print('Wrong password provided for that user.');
-                        //     ScaffoldMessenger.of(context).showSnackBar(
-                        //       SnackBar(
-                        //           content: Text(
-                        //               'Wrong password provided for that user.')),
-                        //     );
-                        //   }
-
-                        //   ScaffoldMessenger.of(context).showSnackBar(
-                        //     SnackBar(
-                        //         content: Text("Incorrect User credentials")),
-                        //   );
-                        // }
-                      } else {
-                        //if it don't have a value it will perform this block
-                        print("error");
-                      }
-                    },
+                                controller.logIn(mailController.text,
+                                    passController.text, context);
+                              } else {
+                                //if it don't have a value it will perform this block
+                                print("error");
+                              }
+                            },
+                          ),
+                        ),
+                  FadeInDown(
+                    delay: Duration(milliseconds: 900),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Don't have an account?",
+                            style: TextStyle(fontWeight: FontWeight.w600)),
+                        TextButton(
+                            onPressed: () {
+                              //will navigate you to the login page
+                              Get.to(SignUp());
+                            },
+                            child: Text("Sign up"))
+                      ],
+                    ),
                   ),
-                ),
-                FadeInDown(
-                  delay: Duration(milliseconds: 900),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Don't have an account?",
-                          style: TextStyle(fontWeight: FontWeight.w600)),
-                      TextButton(
-                          onPressed: () {
-                            //will navigate you to the login page
-                            Get.to(SignUp());
-                          },
-                          child: Text("Sign up"))
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

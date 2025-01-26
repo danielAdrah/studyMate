@@ -20,7 +20,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  List<String> accountType = ["Student", "professor"];
+  List<String> accountType = ["Student", "Professor"];
   bool isSecure = false;
   final signController = Get.put(SignUpController());
   GlobalKey<FormState> formState = GlobalKey<FormState>();
@@ -59,244 +59,215 @@ class _SignUpState extends State<SignUp> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 50),
-                FadeInDown(
-                    delay: Duration(milliseconds: 500),
-                    child: SvgPicture.asset(
-                      "assets/img/Main img.svg",
-                      height: 200,
-                      width: 250,
-                      fit: BoxFit.fill,
-                    )),
-                SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 35),
-                  child: Form(
-                    key: formState,
-                    child: FadeInDown(
-                      delay: Duration(milliseconds: 700),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "First Name",
-                            style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 10),
-                          CustomTextForm(
-                            secure: false,
-                            hinttext: "Enter your first name",
-                            mycontroller: fnameController,
-                            validator: (val) {
-                              if (val == "") {
-                                return "Can't be empty";
-                              }
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "Last Name",
-                            style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 10),
-                          CustomTextForm(
-                            secure: false,
-                            hinttext: "Enter your last name",
-                            mycontroller: lnameController,
-                            validator: (val) {
-                              if (val == "") {
-                                return "Can't be empty";
-                              }
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "E-mail",
-                            style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 10),
-                          CustomTextForm(
-                            secure: false,
-                            hinttext: "Enter your e-mail",
-                            mycontroller: mailController,
-                            validator: (val) {
-                              if (val == "") {
-                                return "Can't be empty";
-                              }
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "Password",
-                            style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 10),
-                          CustomTextForm(
-                            secure: isSecure,
-                            hinttext: "Enter your password",
-                            mycontroller: passController,
-                            onTap: () {
-                              setState(() {
-                                isSecure = !isSecure;
-                              });
-                            },
-                            suffixIcon: isSecure
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            validator: (val) {
-                              if (val == "") {
-                                return "Can't be empty";
-                              }
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "Account Type",
-                            style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 10),
-                          Container(
-                            decoration: BoxDecoration(
-                                color: TColor.white,
-                                borderRadius: BorderRadius.circular(15)),
-                            width: width / 0.5,
-                            child: DropdownButton<String>(
-                              hint: Obx(() => signController
-                                      .accountType.value.isEmpty
-                                  ? Text(
-                                      " Choose your Account Type",
-                                      style: TextStyle(
-                                          color: TColor.black.withOpacity(0.5)),
-                                    )
-                                  : Text(signController.accountType.value,
-                                      style: TextStyle(color: TColor.black))),
-                              items: accountType.map((String service) {
-                                return DropdownMenuItem<String>(
-                                  value: service,
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        service,
-                                        style: TextStyle(
-                                            color:
-                                                TColor.black.withOpacity(0.5)),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                              iconSize: 30,
-                              icon: Icon(Icons.keyboard_arrow_down),
-                              isExpanded: true,
-                              padding: EdgeInsets.symmetric(horizontal: 12),
-                              underline: Text(
-                                "",
-                                style: TextStyle(color: TColor.white),
-                              ),
-                              onChanged: (String? val) {
-                                if (val != null) {
-                                  signController.accountType.value = val;
-                                  print(signController.accountType.value);
+            child: Obx(
+              () => Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 50),
+                  FadeInDown(
+                      delay: Duration(milliseconds: 500),
+                      child: SvgPicture.asset(
+                        "assets/img/Main img.svg",
+                        height: 200,
+                        width: 250,
+                        fit: BoxFit.fill,
+                      )),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 35),
+                    child: Form(
+                      key: formState,
+                      child: FadeInDown(
+                        delay: Duration(milliseconds: 700),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "First Name",
+                              style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(height: 10),
+                            CustomTextForm(
+                              secure: false,
+                              hinttext: "Enter your first name",
+                              mycontroller: fnameController,
+                              validator: (val) {
+                                if (val == "") {
+                                  return "Can't be empty";
                                 }
                               },
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 20),
+                            Text(
+                              "Last Name",
+                              style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(height: 10),
+                            CustomTextForm(
+                              secure: false,
+                              hinttext: "Enter your last name",
+                              mycontroller: lnameController,
+                              validator: (val) {
+                                if (val == "") {
+                                  return "Can't be empty";
+                                }
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                              "E-mail",
+                              style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(height: 10),
+                            CustomTextForm(
+                              secure: false,
+                              hinttext: "Enter your e-mail",
+                              mycontroller: mailController,
+                              validator: (val) {
+                                if (val == "") {
+                                  return "Can't be empty";
+                                }
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                              "Password",
+                              style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(height: 10),
+                            CustomTextForm(
+                              secure: isSecure,
+                              hinttext: "Enter your password",
+                              mycontroller: passController,
+                              onTap: () {
+                                setState(() {
+                                  isSecure = !isSecure;
+                                });
+                              },
+                              suffixIcon: isSecure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              validator: (val) {
+                                if (val == "") {
+                                  return "Can't be empty";
+                                }
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                              "Account Type",
+                              style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(height: 10),
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: TColor.white,
+                                  borderRadius: BorderRadius.circular(15)),
+                              width: width / 0.5,
+                              child: DropdownButton<String>(
+                                hint: Obx(() => signController
+                                        .accountType.value.isEmpty
+                                    ? Text(
+                                        " Choose your Account Type",
+                                        style: TextStyle(
+                                            color:
+                                                TColor.black.withOpacity(0.5)),
+                                      )
+                                    : Text(signController.accountType.value,
+                                        style: TextStyle(color: TColor.black))),
+                                items: accountType.map((String service) {
+                                  return DropdownMenuItem<String>(
+                                    value: service,
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          service,
+                                          style: TextStyle(
+                                              color: TColor.black
+                                                  .withOpacity(0.5)),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                                iconSize: 30,
+                                icon: Icon(Icons.keyboard_arrow_down),
+                                isExpanded: true,
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                underline: Text(
+                                  "",
+                                  style: TextStyle(color: TColor.white),
+                                ),
+                                onChanged: (String? val) {
+                                  if (val != null) {
+                                    signController.accountType.value = val;
+                                    print(signController.accountType.value);
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(height: 35),
-                FadeInDown(
-                  delay: Duration(milliseconds: 800),
-                  child: CustomButton(
-                    title: "Sign up",
-                    //this method to perform the login operation
-                    onTap: () async {
-                      if (formState.currentState!.validate()) {
-                        try {
-                          final credential = await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(
-                            email: mailController.text,
-                            password: passController.text,
-                          );
-
-                          //after the user creates an account a link is send to it
-                          FirebaseAuth.instance.currentUser!
-                              .sendEmailVerification();
-
-                          await addUserToFirestore(
-                              credential.user!,
-                              signController.accountType.value,
-                              fnameController.text);
-
-                          Get.to(LogIn());
-                        } on FirebaseAuthException catch (e) {
-                          if (e.code == 'weak-password') {
-                            print('The password provided is too weak.');
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(
-                                      'The password provided is too weak')),
-                            );
-                          } else if (e.code == 'email-already-in-use') {
-                            print('The account already exists for that email.');
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(
-                                      'The account already exists for that email.')),
-                            );
-                          }
-                        } catch (e) {
-                          print(e);
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.toString())),
-                          );
-                        }
-                      } else {
-                        print("noooo");
-                      }
-                    },
+                  SizedBox(height: 35),
+                  signController.signUpLoading.value
+                      ? CircularProgressIndicator(color: TColor.primary)
+                      : FadeInDown(
+                          delay: Duration(milliseconds: 800),
+                          child: CustomButton(
+                            title: "Sign up",
+                            //this method to perform the login operation
+                            onTap: () async {
+                              if (formState.currentState!.validate()) {
+                                signController.signUp(
+                                    mailController.text,
+                                    passController.text,
+                                    signController.accountType.value,
+                                    fnameController.text,
+                                    context);
+                              } else {
+                                print("noooo");
+                              }
+                            },
+                          ),
+                        ),
+                  FadeInDown(
+                    delay: Duration(milliseconds: 950),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("You have an account?",
+                            style: TextStyle(fontWeight: FontWeight.w600)),
+                        TextButton(
+                            onPressed: () {
+                              //will navigate you to the login page
+                              Get.to(LogIn());
+                            },
+                            child: Text("Sign in"))
+                      ],
+                    ),
                   ),
-                ),
-                FadeInDown(
-                  delay: Duration(milliseconds: 950),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("You have an account?",
-                          style: TextStyle(fontWeight: FontWeight.w600)),
-                      TextButton(
-                          onPressed: () {
-                            //will navigate you to the login page
-                            Get.to(LogIn());
-                          },
-                          child: Text("Sign in"))
-                    ],
-                  ),
-                ),
-                SizedBox(height: 50),
-              ],
+                  SizedBox(height: 50),
+                ],
+              ),
             ),
           ),
         ),
