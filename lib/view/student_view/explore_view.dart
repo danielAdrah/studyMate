@@ -8,8 +8,7 @@ import '../../common_widgets/custom_app_bar.dart';
 import '../../common_widgets/custome_text_field.dart';
 import '../../common_widgets/professor_cell.dart';
 import '../../theme.dart';
-import 'community_view/first_year.dart';
-import 'course_reservation.dart';
+ import 'course_reservation.dart';
 
 class ExploreView extends StatefulWidget {
   const ExploreView({super.key});
@@ -154,35 +153,42 @@ class _ExploreViewState extends State<ExploreView> {
                               ),
                             ),
                             SizedBox(height: 20),
-                            Row(
-                              children: [
-                                CommunityBtn(
-                                  title: "First Year",
-                                  onTap: () {
-                                    Get.to(FirstYear());
-                                  },
-                                ),
-                                SizedBox(width: 3),
-                                CommunityBtn(
-                                  title: "Second Year",
-                                  onTap: () {},
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 40),
-                            Row(
-                              children: [
-                                CommunityBtn(
-                                  title: "Third Year",
-                                  onTap: () {},
-                                ),
-                                SizedBox(width: 3),
-                                CommunityBtn(
-                                  title: "Fourth Year",
-                                  onTap: () {},
-                                ),
-                              ],
-                            ),
+                            // Row(
+                            //   children: [
+                            //     CommunityBtn(
+                            //       title: "First Year",
+                            //       onTap: () {
+                            //         Get.to(FirstYear());
+                            //       },
+                            //     ),
+                            //     SizedBox(width: 3),
+                            //     CommunityBtn(
+                            //       title: "Second Year",
+                            //       onTap: () {},
+                            //     ),
+                            //   ],
+                            // ),
+                            // SizedBox(height: 40),
+                            // Row(
+                            //   children: [
+                            //     CommunityBtn(
+                            //       title: "Third Year",
+                            //       onTap: () {},
+                            //     ),
+                            //     SizedBox(width: 3),
+                            //     CommunityBtn(
+                            //       title: "Fourth Year",
+                            //       onTap: () {},
+                            //     ),
+                            //   ],
+                            // ),
+                            CommunityBtn(title: "First Year", onTap: () {}),
+                            SizedBox(height: 10),
+                            CommunityBtn(title: "Second Year", onTap: () {}),
+                            SizedBox(height: 10),
+                            CommunityBtn(title: "Third Year", onTap: () {}),
+                            SizedBox(height: 10),
+                            CommunityBtn(title: "Fourth Year", onTap: () {}),
                           ],
                         ),
                       ],
@@ -214,7 +220,7 @@ class CommunityBtn extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 9),
+        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
         decoration: BoxDecoration(
           color: TColor.primary,
           borderRadius: BorderRadius.circular(25),

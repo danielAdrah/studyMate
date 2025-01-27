@@ -6,8 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'firebase_options.dart';
 import 'view/auth_view/auth_gate.dart';
-import 'view/auth_view/cover_page.dart';
-
+ 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

@@ -34,7 +34,7 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
         elevation: 0.5,
         child: SizedBox(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            // mainAxisAlignment: MainAxisAlignment.,
             children: [
               IconButton(
                   onPressed: () {
@@ -61,6 +61,8 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
                   },
                   icon: SvgPicture.asset(
                     "assets/img/noti.svg",
+                    width: 50,
+                    height: 50,
                     color: selectTab == 1 ? TColor.primary : Colors.grey,
                   )),
               IconButton(

@@ -129,43 +129,49 @@ class _ProfileViewState extends State<ProfileView> {
                           InfoTile(
                             title: "Password :",
                             onTap: () {},
-                            child: Text("112233",
-                                style: TextStyle(
-                                    color: const Color.fromARGB(115, 0, 0, 0),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400)),
+                            child: TextButton(
+                              child: Text("Change Password!",
+                                  style: TextStyle(fontSize: 12)),
+                              onPressed: () {},
+                            ),
                             icon: Icons.security,
                           ),
-                          SizedBox(height: 35),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 130),
-                            child: InkWell(
+                          SizedBox(height: 25),
+                          // Padding(
+                          //   padding:
+                          //       const EdgeInsets.symmetric(horizontal: 130),
+                          //   child: InkWell(
+                          //     onTap: () {
+                          //       customDialog(
+                          //           context, newName, newMail, newPass);
+                          //     },
+                          //     child: Container(
+                          //       padding: EdgeInsets.symmetric(
+                          //           vertical: 10, horizontal: 15),
+                          //       decoration: BoxDecoration(
+                          //         color: TColor.primary,
+                          //         borderRadius: BorderRadius.circular(25),
+                          //       ),
+                          //       child: Row(
+                          //         mainAxisAlignment: MainAxisAlignment.center,
+                          //         children: [
+                          //           Text(
+                          //             "Update",
+                          //             style: TextStyle(
+                          //                 color: TColor.white,
+                          //                 fontWeight: FontWeight.w600),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //     ),
+                          //   ),
+                          // )
+                          CommunityBtn(
+                              title: "Update",
                               onTap: () {
                                 customDialog(
                                     context, newName, newMail, newPass);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 15),
-                                decoration: BoxDecoration(
-                                  color: TColor.primary,
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Update",
-                                      style: TextStyle(
-                                          color: TColor.white,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
+                              }),
                         ],
                       ),
                     ),
@@ -252,14 +258,17 @@ class InfoTile extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
+
   void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -273,9 +282,12 @@ class InfoTile extends StatelessWidget {
                       fontWeight: FontWeight.w700)),
             ],
           ),
-          InkWell(
-            onTap: onTap,
-            child: child,
+          SizedBox(width: width / 9),
+          Expanded(
+            child: InkWell(
+              onTap: onTap,
+              child: child,
+            ),
           ),
         ],
       ),
@@ -313,11 +325,6 @@ Future<dynamic> customDialog(BuildContext context, TextEditingController name,
                 secure: false,
               ),
               SizedBox(height: 25),
-              CustomTextForm(
-                hinttext: "New Password",
-                mycontroller: pass,
-                secure: false,
-              ),
             ],
           ),
           actions: [
@@ -453,4 +460,33 @@ Future<dynamic> warningDialog(BuildContext context) {
           ],
         );
       });
+}
+
+//===========community button==================
+class CommunityBtn extends StatelessWidget {
+  CommunityBtn({
+    super.key,
+    required this.title,
+    required this.onTap,
+  });
+  final String title;
+  void Function()? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
+        decoration: BoxDecoration(
+          color: TColor.primary,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Text(
+          title,
+          style: TextStyle(color: TColor.white, fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
 }
