@@ -43,13 +43,18 @@ class ProfessorCell extends StatelessWidget {
             children: [
               Container(
                 padding: EdgeInsets.all(10),
-                height: 80,
+                height: 90,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: Colors.grey,
                 ),
                 child: Center(
-                  child: Image.asset(profImg),
+                  child: Image.asset(
+                    profImg,
+                    width: 90,
+                    height: 120,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               SizedBox(height: 6),

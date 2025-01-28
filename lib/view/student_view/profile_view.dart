@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,6 +24,29 @@ class _ProfileViewState extends State<ProfileView> {
   final newName = TextEditingController();
   final newMail = TextEditingController();
   final newPass = TextEditingController();
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  String? userName;
+  String? userEmail;
+
+  Future<void> fetchUserData() async {
+    final user = auth.currentUser;
+    if (user != null) {
+      final docSnap = await firestore.collection('users').doc(user.uid).get();
+      if (docSnap.exists) {
+        setState(() {
+          userName = docSnap.get('name');
+          userEmail = docSnap.get('email');
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +131,7 @@ class _ProfileViewState extends State<ProfileView> {
                           InfoTile(
                             onTap: () {},
                             title: "Name :",
-                            child: Text("Jalal Ahmad",
+                            child: Text(userName ?? "Not set",
                                 style: TextStyle(
                                     color: const Color.fromARGB(115, 0, 0, 0),
                                     fontSize: 16,
@@ -118,7 +142,7 @@ class _ProfileViewState extends State<ProfileView> {
                           InfoTile(
                             title: "E-mail :",
                             onTap: () {},
-                            child: Text("www.jalal@gmail.com",
+                            child: Text(userEmail ?? "Not set",
                                 style: TextStyle(
                                     color: const Color.fromARGB(115, 0, 0, 0),
                                     fontSize: 16,

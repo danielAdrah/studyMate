@@ -2,13 +2,15 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../common_widgets/course_cell.dart';
 import '../../common_widgets/custom_app_bar.dart';
 import '../../common_widgets/custome_text_field.dart';
 import '../../common_widgets/professor_cell.dart';
+import '../../controller/store_controller.dart';
 import '../../theme.dart';
- import 'course_reservation.dart';
+import 'course_reservation.dart';
 
 class ExploreView extends StatefulWidget {
   const ExploreView({super.key});
@@ -19,6 +21,8 @@ class ExploreView extends StatefulWidget {
 
 class _ExploreViewState extends State<ExploreView> {
   final searchCont = TextEditingController();
+  final controller = Get.put(StoreController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,22 +61,40 @@ class _ExploreViewState extends State<ExploreView> {
                   delay: Duration(milliseconds: 750),
                   child: SizedBox(
                     width: double.infinity,
-                    height: 150,
-                    child: ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 5,
-                        itemBuilder: (context, index) {
-                          return ProfessorCell(
-                              profName:
-                                  "Jalal Ahmad", //this is the name of the professor
-                              profImg:
-                                  "assets/img/user.png", //this is the professor image
-                              profField:
-                                  "DataBase", //this is the field which the professor studes in
-                              onTap:
-                                  () {} //this will navigate us to the selected professor detail page
-                              );
+                    height: 170,
+                    child: StreamBuilder(
+                        stream: controller.getProfessorStream(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Text(snapshot.error.toString());
+                          }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text("Please Wait");
+                          }
+                          if (!snapshot.hasData && snapshot.data!.isEmpty) {
+                            return Text(
+                              "There are no profrssors yet",
+                              style: TextStyle(color: Colors.black),
+                            );
+                          }
+                          return ListView.builder(
+                              physics: BouncingScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                var pro = snapshot.data![index];
+                                return ProfessorCell(
+                                    profName: pro[
+                                        'name'], //this is the name of the professor
+                                    profImg:
+                                        "assets/img/pro_avatar.png", //this is the professor image
+                                    profField:
+                                        "DataBase", //this is the field which the professor studes in
+                                    onTap:
+                                        () {} //this will navigate us to the selected professor detail page
+                                    );
+                              });
                         }),
                   ),
                 ),
@@ -136,8 +158,12 @@ class _ExploreViewState extends State<ExploreView> {
                           height: 250,
                           width: 150,
                           decoration: BoxDecoration(
-                            color: TColor.primary,
+                            color: Color(0XFFFF9F92),
                             borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Center(
+                            child: SvgPicture.asset("assets/img/community.svg",
+                                width: 120),
                           ),
                         ),
                         Column(
@@ -272,11 +298,7 @@ class SearchAndFilter extends StatelessWidget {
         IconButton(
           //this will filter the results
           onPressed: () {},
-          icon: Icon(
-            Icons.filter_alt_outlined,
-            size: 30,
-            color: TColor.black,
-          ),
+          icon: SvgPicture.asset("assets/img/filter.svg"),
         ),
       ],
     );

@@ -3,6 +3,8 @@
 import 'dart:io';
 
 import 'package:animate_do/animate_do.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/cours_controller.dart';
@@ -24,8 +26,28 @@ class CustomAppBar extends StatefulWidget {
 
 class _CustomAppBarState extends State<CustomAppBar> {
   final controller = Get.put(CoursController());
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-  
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  String? userName;
+
+  Future<void> fetchUserData() async {
+    final user = auth.currentUser;
+    if (user != null) {
+      final docSnap = await firestore.collection('users').doc(user.uid).get();
+      if (docSnap.exists) {
+        setState(() {
+          userName = docSnap.get('name');
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +64,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                       color: TColor.black,
                       fontSize: 22,
                       fontWeight: FontWeight.w700)),
-              Text(widget.name,
+              Text(userName ?? "noo",
                   style: TextStyle(
                       color: TColor.black,
                       fontSize: 16,
