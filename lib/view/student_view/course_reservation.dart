@@ -10,7 +10,10 @@ import '../../controller/cours_controller.dart';
 import '../../theme.dart';
 
 class CourseReservation extends StatefulWidget {
-  const CourseReservation({super.key});
+  const CourseReservation({super.key, required this.courseName, required this.courseField, required this.courseID});
+  final String courseName;
+  final String courseField;
+  final String courseID;
 
   @override
   State<CourseReservation> createState() => _CourseReservationState();
@@ -47,8 +50,8 @@ class _CourseReservationState extends State<CourseReservation> {
                   delay: Duration(milliseconds: 600),
                   child: Center(
                       child: CourseCell2(
-                    courseName: "Banking",
-                    courseField: "bank",
+                    courseName: widget.courseName,
+                    courseField: widget.courseField,
                     onTap: () {},
                   )),
                 ),

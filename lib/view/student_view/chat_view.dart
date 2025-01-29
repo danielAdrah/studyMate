@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:animate_do/animate_do.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,6 +17,8 @@ class ChatView extends StatefulWidget {
 }
 
 class _ChatViewState extends State<ChatView> {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
   final controller = Get.put(StoreController());
   @override
   Widget build(BuildContext context) {
@@ -59,10 +63,18 @@ class _ChatViewState extends State<ChatView> {
                           itemCount: snapshot.data!.length,
                           itemBuilder: (context, index) {
                             var student = snapshot.data![index];
-                            return ChatTile(
-                              name: student["name"],
-                              onTap: () {},
-                            );
+                            //here we make sure not to display the account that opening the app now
+                            if (student["email"] != auth.currentUser!.email) {
+                              return FadeInDown(
+                                delay: Duration(milliseconds: 500),
+                                child: ChatTile(
+                                  name: student["name"],
+                                  onTap: () {},
+                                ),
+                              );
+                            } else {
+                              return Container();
+                            }
                           },
                         );
                       }),

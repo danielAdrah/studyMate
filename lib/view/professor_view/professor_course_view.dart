@@ -1,10 +1,14 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, deprecated_member_use
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:studymate/common_widgets/custom_button.dart';
 
 import '../../common_widgets/custom_app_bar.dart';
+import '../../common_widgets/custome_text_field.dart';
+import '../../controller/store_controller.dart';
 import '../../theme.dart';
 
 class ProfessorCourseView extends StatefulWidget {
@@ -15,6 +19,21 @@ class ProfessorCourseView extends StatefulWidget {
 }
 
 class _ProfessorCourseViewState extends State<ProfessorCourseView> {
+  final controller = Get.put(StoreController());
+  final courseName = TextEditingController();
+  final courseField = TextEditingController();
+
+  void clearFields() {
+    courseName.clear();
+    courseField.clear();
+  }
+
+  @override
+  void initState() {
+    controller.getProfessorCourse();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -36,7 +55,7 @@ class _ProfessorCourseViewState extends State<ProfessorCourseView> {
                 FadeInDown(
                   delay: Duration(milliseconds: 500),
                   child: Text(
-                    "Booked Courses",
+                    "My Courses",
                     style: TextStyle(
                       color: TColor.black,
                       fontSize: 18,
@@ -45,27 +64,58 @@ class _ProfessorCourseViewState extends State<ProfessorCourseView> {
                   ),
                 ),
                 SizedBox(height: 30),
-                FadeInDown(
-                  delay: Duration(milliseconds: 750),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 190,
-                    child: ListView.builder(
-                        //this is a list if booked course by the user
-                        physics: BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 5,
-                        itemBuilder: (context, index) {
-                          return ProfessorCourseCell(
-                            courseName: "Programming",
-                            onTapDelete: () {},
-                            onTapEdit: () {},
-                          );
-                        }),
+                ZoomIn(
+                  delay: Duration(milliseconds: 700),
+                  child: Center(
+                    child: controller.profrssorCourse.isEmpty
+                        ? Text(
+                            "You don't have courses yet! \nPlease add courses first",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 17),
+                          )
+                        : FadeInDown(
+                            delay: Duration(milliseconds: 750),
+                            child: SizedBox(
+                                width: double.infinity,
+                                height: 190,
+                                child: Obx(
+                                  () => ListView.builder(
+                                      //this is a list if booked course by the user
+                                      physics: BouncingScrollPhysics(),
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount:
+                                          controller.profrssorCourse.length,
+                                      itemBuilder: (context, index) {
+                                        var course =
+                                            controller.profrssorCourse[index];
+                                        return ProfessorCourseCell(
+                                          courseName: course['courseName'],
+                                          onTapDelete: () {},
+                                          onTapEdit: () {},
+                                        );
+                                      }),
+                                )),
+                          ),
                   ),
                 ),
                 SizedBox(height: height / 3),
-                Center(child: CustomButton(title: "Add Course", onTap: () {})),
+                FadeInDown(
+                    delay: Duration(milliseconds: 600),
+                    child: Center(
+                        child: CustomButton(
+                            title: "Add Course",
+                            onTap: () {
+                              customDialog(context, courseName, courseField,
+                                  () {
+                                controller.addCourse(
+                                    courseName.text, courseField.text);
+                                clearFields();
+                                Get.back();
+                              });
+                            }))),
                 SizedBox(height: 20),
               ],
             ),
@@ -142,4 +192,92 @@ class ProfessorCourseCell extends StatelessWidget {
       ),
     );
   }
+}
+
+//==========this is a dialog==============
+Future<dynamic> customDialog(BuildContext context, TextEditingController name,
+    TextEditingController field, void Function()? onTapCreate) {
+  return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          icon: SvgPicture.asset(
+            "assets/img/course.svg",
+            color: TColor.primary,
+            width: 70,
+            height: 70,
+          ),
+          backgroundColor: TColor.background,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 15),
+              CustomTextForm(
+                hinttext: "Course Name",
+                mycontroller: name,
+                secure: false,
+              ),
+              SizedBox(height: 25),
+              CustomTextForm(
+                hinttext: "Course Field",
+                mycontroller: field,
+                secure: false,
+              ),
+              SizedBox(height: 25),
+            ],
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: onTapCreate,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 13, horizontal: 30),
+                    decoration: BoxDecoration(
+                      color: TColor.primary,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Create",
+                          style: TextStyle(
+                              color: TColor.white, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                InkWell(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 13, horizontal: 15),
+                    decoration: BoxDecoration(
+                      color: TColor.white,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Cancel",
+                          style: TextStyle(
+                              color: TColor.primary,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      });
 }

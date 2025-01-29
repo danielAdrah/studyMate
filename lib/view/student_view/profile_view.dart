@@ -229,16 +229,17 @@ class _ProfileViewState extends State<ProfileView> {
                         children: [
                           SizedBox(height: 40),
                           InfoTile(
-                            title: "Log Out",
-                            onTap: () async {
+                            onTapGen: () async {
                               //this is for signout
                               await FirebaseAuth.instance.signOut();
                               Get.off(LogIn());
                             },
+                            title: "Log Out",
+                            onTap: () {},
                             child: Icon(
                               Icons.arrow_forward_ios,
                               size: 20,
-                              color: Color.fromARGB(115, 0, 0, 0),
+                              color: Colors.white,
                             ),
                             icon: Icons.logout,
                           ),
@@ -248,7 +249,7 @@ class _ProfileViewState extends State<ProfileView> {
                             child: Icon(
                               Icons.arrow_forward_ios,
                               size: 20,
-                              color: Color.fromARGB(115, 0, 0, 0),
+                              color: Colors.white,
                             ),
                             onTap: () {
                               warningDialog(context);
@@ -278,10 +279,12 @@ class InfoTile extends StatelessWidget {
     required this.icon,
     required this.child,
     required this.onTap,
+    this.onTapGen,
   });
   final String title;
   final IconData icon;
   final Widget child;
+  void Function()? onTapGen;
 
   void Function()? onTap;
 
@@ -289,31 +292,34 @@ class InfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Icon(icon, color: TColor.primary, size: 30),
-              SizedBox(width: 8),
-              Text(title,
-                  style: TextStyle(
-                      color: TColor.primary,
-                      fontSize: 19,
-                      fontWeight: FontWeight.w700)),
-            ],
-          ),
-          SizedBox(width: width / 9),
-          Expanded(
-            child: InkWell(
-              onTap: onTap,
-              child: child,
+    return InkWell(
+      onTap: onTapGen,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Icon(icon, color: TColor.primary, size: 30),
+                SizedBox(width: 8),
+                Text(title,
+                    style: TextStyle(
+                        color: TColor.primary,
+                        fontSize: 19,
+                        fontWeight: FontWeight.w700)),
+              ],
             ),
-          ),
-        ],
+            SizedBox(width: width / 9),
+            Expanded(
+              child: InkWell(
+                onTap: onTap,
+                child: child,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

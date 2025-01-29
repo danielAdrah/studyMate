@@ -2,6 +2,7 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../common_widgets/course_cell.dart';
 import 'package:get/get.dart';
 import '../../common_widgets/custom_app_bar.dart';
@@ -20,6 +21,13 @@ class ProfessorExplore extends StatefulWidget {
 class _ProfessorExploreState extends State<ProfessorExplore> {
   final searchCont = TextEditingController();
   final controller = Get.put(StoreController());
+
+  @override
+  void initState() {
+    controller.getAllCourse();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,20 +118,22 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
                 FadeInDown(
                   delay: Duration(milliseconds: 900),
                   child: SizedBox(
-                    width: double.infinity,
-                    height: 150,
-                    child: ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 5,
-                        itemBuilder: (context, index) {
-                          return CourseCell(
-                            courseName: "Programming",
-                            courseField: "something",
-                            onTap: () {},
-                          );
-                        }),
-                  ),
+                      width: double.infinity,
+                      height: 150,
+                      child: Obx(
+                        () => ListView.builder(
+                            physics: BouncingScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: controller.allCourse.length,
+                            itemBuilder: (context, index) {
+                              var course = controller.allCourse[index];
+                              return CourseCell(
+                                courseName: course['courseName'],
+                                courseField: course['courseField'],
+                                onTap: () {},
+                              );
+                            }),
+                      )),
                 ),
                 SizedBox(height: 20),
 
@@ -131,35 +141,6 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-//===========community button==================
-class CommunityBtn extends StatelessWidget {
-  CommunityBtn({
-    super.key,
-    required this.title,
-    required this.onTap,
-  });
-  final String title;
-  void Function()? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 9),
-        decoration: BoxDecoration(
-          color: TColor.primary,
-          borderRadius: BorderRadius.circular(25),
-        ),
-        child: Text(
-          title,
-          style: TextStyle(color: TColor.white, fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -204,11 +185,7 @@ class SearchAndFilter extends StatelessWidget {
         IconButton(
           //this will filter the results
           onPressed: () {},
-          icon: Icon(
-            Icons.filter_alt_outlined,
-            size: 30,
-            color: TColor.black,
-          ),
+          icon: SvgPicture.asset("assets/img/filter.svg"),
         ),
       ],
     );

@@ -24,6 +24,12 @@ class _ExploreViewState extends State<ExploreView> {
   final controller = Get.put(StoreController());
 
   @override
+  void initState() {
+    controller.getAllCourse();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: TColor.background,
@@ -112,28 +118,45 @@ class _ExploreViewState extends State<ExploreView> {
                   ),
                 ),
                 SizedBox(height: 30),
-                //list of courses
-                FadeInDown(
-                  delay: Duration(milliseconds: 900),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 150,
-                    child: ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 5,
-                        itemBuilder: (context, index) {
-                          return CourseCell(
-                            courseName: "Programming",
-                            courseField: "something",
-                            onTap: () {
-                              Get.to(CourseReservation());
-                            },
-                          );
-                        }),
-                  ),
-                ),
-                SizedBox(height: 20),
+                controller.allCourse.isEmpty
+                    ? Text(
+                        "There are no courses to display yet!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17),
+                      )
+                    :
+                    //list of courses
+                    FadeInDown(
+                        delay: Duration(milliseconds: 900),
+                        child: SizedBox(
+                            width: double.infinity,
+                            height: 150,
+                            child: Obx(
+                              () => ListView.builder(
+                                  physics: BouncingScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: controller.allCourse.length,
+                                  itemBuilder: (context, index) {
+                                    var course = controller.allCourse[index];
+                                    return CourseCell(
+                                      courseName: course['courseName'],
+                                      courseField: course['courseField'],
+                                      onTap: () {
+                                        Get.to(CourseReservation(
+                                          courseName: course['courseName'],
+                                          courseField: course['courseField'],
+                                          courseID: course.id,
+                                        ));
+                                      },
+                                    );
+                                  }),
+                            )),
+                      ),
+
+                SizedBox(height: 30),
                 FadeInDown(
                   delay: Duration(milliseconds: 1000),
                   child: Container(
