@@ -114,26 +114,70 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
                   ),
                 ),
                 SizedBox(height: 30),
-                //list of courses
+                // controller.allCourse.isEmpty
+                //     ? Center(
+                //         child: Text("There are no courses to be displayed yet!",
+                //             style: TextStyle(
+                //                 color: Colors.black,
+                //                 fontWeight: FontWeight.bold)),
+                //       )
+                //     :
+                //     //list of courses
+                //     FadeInDown(
+                //         delay: Duration(milliseconds: 900),
+                //         child: SizedBox(
+                //             width: double.infinity,
+                //             height: 150,
+                //             child: Obx(
+                //               () => ListView.builder(
+                //                   physics: BouncingScrollPhysics(),
+                //                   scrollDirection: Axis.horizontal,
+                //                   itemCount: controller.allCourse.length,
+                //                   itemBuilder: (context, index) {
+                //                     var course = controller.allCourse[index];
+                //                     return CourseCell(
+                //                       courseName: course['courseName'],
+                //                       courseField: course['courseField'],
+                //                       onTap: () {},
+                //                     );
+                //                   }),
+                //             )),
+                //       ),
                 FadeInDown(
                   delay: Duration(milliseconds: 900),
                   child: SizedBox(
-                      width: double.infinity,
-                      height: 150,
-                      child: Obx(
-                        () => ListView.builder(
-                            physics: BouncingScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: controller.allCourse.length,
-                            itemBuilder: (context, index) {
-                              var course = controller.allCourse[index];
-                              return CourseCell(
-                                courseName: course['courseName'],
-                                courseField: course['courseField'],
-                                onTap: () {},
-                              );
-                            }),
-                      )),
+                    width: double.infinity,
+                    height: 150,
+                    child: StreamBuilder(
+                        stream: controller.fetchCoursesStream(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Text(snapshot.error.toString());
+                          }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.red,
+                            ));
+                          }
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Text("There are no profrssors yet");
+                          }
+                          return ListView.builder(
+                              physics: BouncingScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                var course = snapshot.data![index];
+                                return CourseCell(
+                                  courseName: course['courseName'],
+                                  courseField: course['courseField'],
+                                  onTap: () {},
+                                );
+                              });
+                        }),
+                  ),
                 ),
                 SizedBox(height: 20),
 

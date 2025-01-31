@@ -145,7 +145,7 @@ class _ProfileViewState extends State<ProfileView> {
                             child: Text(userEmail ?? "Not set",
                                 style: TextStyle(
                                     color: const Color.fromARGB(115, 0, 0, 0),
-                                    fontSize: 16,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w400)),
                             icon: Icons.mail,
                           ),
@@ -153,11 +153,8 @@ class _ProfileViewState extends State<ProfileView> {
                           InfoTile(
                             title: "Password :",
                             onTap: () {},
-                            child: TextButton(
-                              child: Text("Change Password!",
-                                  style: TextStyle(fontSize: 12)),
-                              onPressed: () {},
-                            ),
+                            child: InkWell(
+                                onTap: () {}, child: Text("Change Password")),
                             icon: Icons.security,
                           ),
                           SizedBox(height: 25),

@@ -76,12 +76,16 @@ class _ExploreViewState extends State<ExploreView> {
                           }
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Text("Please Wait");
+                            return Center(
+                                child: CircularProgressIndicator(
+                                    color: TColor.primary));
                           }
-                          if (!snapshot.hasData && snapshot.data!.isEmpty) {
-                            return Text(
-                              "There are no profrssors yet",
-                              style: TextStyle(color: Colors.black),
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Center(
+                              child: Text(
+                                "There are no profrssors yet",
+                                style: TextStyle(color: Colors.black),
+                              ),
                             );
                           }
                           return ListView.builder(
@@ -119,13 +123,16 @@ class _ExploreViewState extends State<ExploreView> {
                 ),
                 SizedBox(height: 30),
                 controller.allCourse.isEmpty
-                    ? Text(
-                        "There are no courses to display yet!",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17),
+                    ? FadeInDown(
+                        delay: Duration(milliseconds: 880),
+                        child: Text(
+                          "There are no courses to display yet!",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17),
+                        ),
                       )
                     :
                     //list of courses

@@ -65,42 +65,29 @@ class _ProfessorCourseViewState extends State<ProfessorCourseView> {
                 ),
                 SizedBox(height: 30),
                 ZoomIn(
-                  delay: Duration(milliseconds: 700),
-                  child: Center(
-                    child: controller.profrssorCourse.isEmpty
-                        ? Text(
-                            "You don't have courses yet! \nPlease add courses first",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 17),
-                          )
-                        : FadeInDown(
-                            delay: Duration(milliseconds: 750),
-                            child: SizedBox(
-                                width: double.infinity,
-                                height: 190,
-                                child: Obx(
-                                  () => ListView.builder(
-                                      //this is a list if booked course by the user
-                                      physics: BouncingScrollPhysics(),
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount:
-                                          controller.profrssorCourse.length,
-                                      itemBuilder: (context, index) {
-                                        var course =
-                                            controller.profrssorCourse[index];
-                                        return ProfessorCourseCell(
-                                          courseName: course['courseName'],
-                                          onTapDelete: () {},
-                                          onTapEdit: () {},
-                                        );
-                                      }),
-                                )),
-                          ),
-                  ),
-                ),
+                    delay: Duration(milliseconds: 700),
+                    child: FadeInDown(
+                      delay: Duration(milliseconds: 750),
+                      child: SizedBox(
+                          width: double.infinity,
+                          height: 190,
+                          child: Obx(
+                            () => ListView.builder(
+                                //this is a list if booked course by the user
+                                physics: BouncingScrollPhysics(),
+                                scrollDirection: Axis.horizontal,
+                                itemCount: controller.profrssorCourse.length,
+                                itemBuilder: (context, index) {
+                                  var course =
+                                      controller.profrssorCourse[index];
+                                  return ProfessorCourseCell(
+                                    courseName: course['courseName'],
+                                    onTapDelete: () {},
+                                    onTapEdit: () {},
+                                  );
+                                }),
+                          )),
+                    )),
                 SizedBox(height: height / 3),
                 FadeInDown(
                     delay: Duration(milliseconds: 600),

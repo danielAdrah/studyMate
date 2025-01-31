@@ -7,9 +7,10 @@ import 'package:get/get.dart';
 class StoreController extends GetxController {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final profrssorCourse = RxList<QueryDocumentSnapshot>.from([]);
-  final allCourse = RxList<QueryDocumentSnapshot>.from([]);
+  final RxList allCourse = [].obs;
   RxBool courseLoading = false.obs;
   RxBool allcourseLoading = false.obs;
+  RxBool addCourseLoading = false.obs;
 
   CollectionReference coursesCollection =
       FirebaseFirestore.instance.collection('courses');
@@ -41,6 +42,7 @@ class StoreController extends GetxController {
   //========ADD COURSES
   Future<void> addCourse(courseName, courseField) async {
     try {
+      addCourseLoading.value = false;
       DocumentReference response = await coursesCollection.add({
         'courseName': courseName,
         'courseField': courseField,
@@ -48,7 +50,10 @@ class StoreController extends GetxController {
       });
 
       await getProfessorCourse();
+      getProfessorCourse();
+      addCourseLoading.value = true;
     } catch (e) {
+      addCourseLoading.value = true;
       print("loooooooook herreeeee ${e.toString()}");
     }
   }
@@ -83,5 +88,27 @@ class StoreController extends GetxController {
       allcourseLoading.value = false;
       print("===========${e.toString()}");
     }
+  }
+
+//=====GET ALL COURSES
+  Stream<List<Map<String, dynamic>>> fetchCoursesStream() {
+    return firestore.collection("courses").snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final user = doc.data();
+        return user;
+      }).toList();
+    });
+  }
+
+//======GET COURSES FOR  EVERY PROFESSOR
+  Stream<List<Map<String, dynamic>>> fetchProfessorCourseStream() {
+    return firestore.collection("courses").snapshots().map((snapshot) {
+      return snapshot.docs.where((doc) {
+        final proCourse = doc.data();
+        return proCourse['id'] == FirebaseAuth.instance.currentUser!.uid;
+      }).map((doc) {
+        return doc.data();
+      }).toList();
+    });
   }
 }

@@ -49,12 +49,16 @@ class _ChatViewState extends State<ChatView> {
                         }
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Text("Please Wait");
+                          return Center(
+                              child: CircularProgressIndicator(
+                                  color: TColor.primary));
                         }
-                        if (!snapshot.hasData && snapshot.data!.isEmpty) {
-                          return Text(
-                            "There are no profrssors yet",
-                            style: TextStyle(color: Colors.black),
+                        if (snapshot.data == null || snapshot.data!.isEmpty) {
+                          return Center(
+                            child: Text(
+                              "There are no profrssors yet",
+                              style: TextStyle(color: Colors.black),
+                            ),
                           );
                         }
                         return ListView.builder(
