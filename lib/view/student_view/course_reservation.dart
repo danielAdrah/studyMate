@@ -7,10 +7,15 @@ import 'package:studymate/common_widgets/custom_button.dart';
 
 import '../../common_widgets/custom_app_bar.dart';
 import '../../controller/cours_controller.dart';
+import '../../controller/store_controller.dart';
 import '../../theme.dart';
 
 class CourseReservation extends StatefulWidget {
-  const CourseReservation({super.key, required this.courseName, required this.courseField, required this.courseID});
+  const CourseReservation(
+      {super.key,
+      required this.courseName,
+      required this.courseField,
+      required this.courseID});
   final String courseName;
   final String courseField;
   final String courseID;
@@ -21,6 +26,7 @@ class CourseReservation extends StatefulWidget {
 
 class _CourseReservationState extends State<CourseReservation> {
   final coursCont = Get.put(CoursController());
+  final storeController = Get.put(StoreController());
   final courseDate = TextEditingController();
   final courseTime = TextEditingController();
   List<String> professor = ["A", "B", "C"];
@@ -188,6 +194,13 @@ class _CourseReservationState extends State<CourseReservation> {
                           print("error");
                           customDialog(context);
                         } else {
+                          storeController.reserveCourse(
+                            widget.courseName,
+                            widget.courseField,
+                            coursCont.professorName.value,
+                            courseDate.text,
+                            courseTime.text,
+                          );
                           print("done");
                           clearFields();
                         }

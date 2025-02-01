@@ -21,6 +21,12 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   List<String> accountType = ["Student", "Professor"];
+  List<String> studentSpecailty = [
+    "Programing Model",
+    "Machine Learning",
+    "Design",
+    "Analysis Algorithms"
+  ];
   bool isSecure = false;
   final signController = Get.put(SignUpController());
   GlobalKey<FormState> formState = GlobalKey<FormState>();
@@ -30,25 +36,6 @@ class _SignUpState extends State<SignUp> {
   TextEditingController passController = TextEditingController();
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  Future<void> addUserToFirestore(
-      User user, String accountType, nameController) async {
-    DocumentReference? docRef;
-
-    if (accountType == "Student") {
-      docRef = firestore.collection("students").doc(user.uid);
-    } else if (accountType == "professor") {
-      docRef = firestore.collection("professors").doc(user.uid);
-    }
-
-    await docRef!.set({
-      'uid': user.uid,
-      'email': user.email!,
-      'name': nameController,
-      'role': accountType,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,11 +204,101 @@ class _SignUpState extends State<SignUp> {
                                 onChanged: (String? val) {
                                   if (val != null) {
                                     signController.accountType.value = val;
+                                    signController.specialty.clear();
                                     print(signController.accountType.value);
                                   }
                                 },
                               ),
                             ),
+                            signController.accountType.value == 'Student'
+                                ? Padding(
+                                    padding: const EdgeInsets.only(top: 35),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              color: TColor.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(15)),
+                                          width: width / 0.5,
+                                          child: DropdownButton<String>(
+                                            hint: Text(
+                                              " Choose your Specialty",
+                                              style: TextStyle(
+                                                  color: TColor.black
+                                                      .withOpacity(0.5)),
+                                            ),
+                                            items: studentSpecailty
+                                                .map((String service) {
+                                              return DropdownMenuItem<String>(
+                                                value: service,
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      service,
+                                                      style: TextStyle(
+                                                          color: TColor.black
+                                                              .withOpacity(
+                                                                  0.5)),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            }).toList(),
+                                            iconSize: 30,
+                                            icon:
+                                                Icon(Icons.keyboard_arrow_down),
+                                            isExpanded: true,
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 12),
+                                            underline: Text(
+                                              "",
+                                              style: TextStyle(
+                                                  color: TColor.white),
+                                            ),
+                                            onChanged: (String? val) {
+                                              if (val != null) {
+                                                signController.specialty.text =
+                                                    val;
+                                                print(signController
+                                                    .specialty.text);
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                        SizedBox(height: 20),
+                                        CustomTextForm(
+                                          secure: false,
+                                          hinttext: "Your Specailty",
+                                          mycontroller:
+                                              signController.specialty,
+                                          validator: (val) {
+                                            if (val == null || val.isEmpty) {
+                                              return "Please choose an account type";
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : signController.accountType.value ==
+                                        'Professor'
+                                    ? Padding(
+                                        padding: const EdgeInsets.only(top: 25),
+                                        child: CustomTextForm(
+                                          secure: isSecure,
+                                          hinttext: "Enter your specialty",
+                                          mycontroller:
+                                              signController.specialty,
+                                          validator: (val) {
+                                            if (val == "") {
+                                              return "Can't be empty";
+                                            }
+                                          },
+                                        ),
+                                      )
+                                    : Container(),
                           ],
                         ),
                       ),
@@ -241,6 +318,7 @@ class _SignUpState extends State<SignUp> {
                                     mailController.text,
                                     passController.text,
                                     signController.accountType.value,
+                                    signController.specialty.text,
                                     fnameController.text,
                                     context);
                               } else {

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
 
 import 'package:animate_do/animate_do.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../common_widgets/course_cell.dart';
@@ -19,6 +20,8 @@ class ProfessorExplore extends StatefulWidget {
 }
 
 class _ProfessorExploreState extends State<ProfessorExplore> {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
   final searchCont = TextEditingController();
   final controller = Get.put(StoreController());
 
@@ -86,16 +89,20 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
                               itemCount: snapshot.data!.length,
                               itemBuilder: (context, index) {
                                 var pro = snapshot.data![index];
-                                return ProfessorCell(
-                                    profName: pro[
-                                        'name'], //this is the name of the professor
-                                    profImg:
-                                        "assets/img/pro_avatar.png", //this is the professor image
-                                    profField:
-                                        "DataBase", //this is the field which the professor studes in
-                                    onTap:
-                                        () {} //this will navigate us to the selected professor detail page
-                                    );
+                                if (pro["email"] != auth.currentUser!.email) {
+                                  return ProfessorCell(
+                                      profName: pro[
+                                          'name'], //this is the name of the professor
+                                      profImg:
+                                          "assets/img/pro_avatar.png", //this is the professor image
+                                      profField:
+                                          "DataBase", //this is the field which the professor studes in
+                                      onTap:
+                                          () {} //this will navigate us to the selected professor detail page
+                                      );
+                                } else {
+                                  return Container();
+                                }
                               });
                         }),
                   ),
@@ -162,7 +169,10 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
                             ));
                           }
                           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Text("There are no profrssors yet");
+                            return Text(
+                              "There are no courses yet",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            );
                           }
                           return ListView.builder(
                               physics: BouncingScrollPhysics(),

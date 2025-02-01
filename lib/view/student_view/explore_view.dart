@@ -84,7 +84,9 @@ class _ExploreViewState extends State<ExploreView> {
                             return Center(
                               child: Text(
                                 "There are no profrssors yet",
-                                style: TextStyle(color: Colors.black),
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
                               ),
                             );
                           }

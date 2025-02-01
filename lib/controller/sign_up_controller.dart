@@ -13,6 +13,8 @@ class SignUpController extends GetxController {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   RxString accountType = "".obs;
+  TextEditingController specialty = TextEditingController();
+
   RxBool logInLoading = false.obs;
   RxBool signUpLoading = false.obs;
   //========
@@ -140,7 +142,7 @@ class SignUpController extends GetxController {
 
   //=========
   Future signUp(
-      String mail, passWord, accountType, name, BuildContext context) async {
+      String mail, passWord, accountType, specialty,name, BuildContext context) async {
     try {
       signUpLoading.value = true;
       final credential =
@@ -158,6 +160,7 @@ class SignUpController extends GetxController {
         'email': credential.user!.email,
         'name': name,
         'role': accountType,
+        'specialty': specialty,
         'createdAt': FieldValue.serverTimestamp(),
       });
       print("done after added");

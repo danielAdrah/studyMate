@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import '../../common_widgets/booked_course_cell.dart';
 import '../../common_widgets/custom_app_bar.dart';
+import '../../controller/store_controller.dart';
 import '../../theme.dart';
 import 'booked_course_detail.dart';
 
@@ -17,6 +18,7 @@ class BookedCourses extends StatefulWidget {
 }
 
 class _BookedCoursesState extends State<BookedCourses> {
+  final storeController = Get.put(StoreController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,18 +53,41 @@ class _BookedCoursesState extends State<BookedCourses> {
                   child: SizedBox(
                     width: double.infinity,
                     height: 150,
-                    child: ListView.builder(
-                        //this is a list if booked course by the user
-                        physics: BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 5,
-                        itemBuilder: (context, index) {
-                          return BookedCourseCell(
-                            courseName: "Programming",
-                            onTap: () {
-                              Get.to(BookedCourseDetail());
-                            },
-                          );
+                    child: StreamBuilder(
+                        stream: storeController.fetchBookedCoursesStream(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Text(snapshot.error.toString());
+                          }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                                child: CircularProgressIndicator(
+                                    color: TColor.primary));
+                          }
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Center(
+                              child: Text(
+                                "You haven't booked any courses yet!",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            );
+                          }
+                          return ListView.builder(
+                              physics: BouncingScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                var bookedCourse = snapshot.data![index];
+                                return BookedCourseCell(
+                                  courseName: bookedCourse['courseName'],
+                                  onTap: () {
+                                    Get.to(BookedCourseDetail());
+                                  },
+                                );
+                              });
                         }),
                   ),
                 ),

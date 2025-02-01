@@ -15,6 +15,9 @@ class StoreController extends GetxController {
   CollectionReference coursesCollection =
       FirebaseFirestore.instance.collection('courses');
 
+  CollectionReference bookedCoursesCollection =
+      FirebaseFirestore.instance.collection('bookedcourses');
+
   //========GET ALL THE PROFESSORS
   Stream<List<Map<String, dynamic>>> getProfessorStream() {
     return firestore.collection("users").snapshots().map((snapshot) {
@@ -106,6 +109,35 @@ class StoreController extends GetxController {
       return snapshot.docs.where((doc) {
         final proCourse = doc.data();
         return proCourse['id'] == FirebaseAuth.instance.currentUser!.uid;
+      }).map((doc) {
+        return doc.data();
+      }).toList();
+    });
+  }
+
+//======RESERVE A COURSE
+  Future<void> reserveCourse(String courseName, courseField, professor, date, time) async {
+    try {
+      DocumentReference response = await bookedCoursesCollection.add({
+        'professor': professor,
+        'courseDate': date,
+        'courseTime': time,
+        'courseName' : courseName,
+        'courseField' : courseField,
+        'id': FirebaseAuth.instance.currentUser!.uid,
+      });
+      print("======= done adding");
+    } catch (e) {
+      print("=======booked ${e.toString()}");
+    }
+  }
+
+//======GET BOOKED COURSES
+  Stream<List<Map<String, dynamic>>> fetchBookedCoursesStream() {
+    return firestore.collection("bookedcourses").snapshots().map((snapshot) {
+      return snapshot.docs.where((doc) {
+        final bookedCourse = doc.data();
+        return bookedCourse['id'] == FirebaseAuth.instance.currentUser!.uid;
       }).map((doc) {
         return doc.data();
       }).toList();

@@ -28,6 +28,7 @@ class _ProfileViewState extends State<ProfileView> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   String? userName;
   String? userEmail;
+  String? userSpecialty;
 
   Future<void> fetchUserData() async {
     final user = auth.currentUser;
@@ -37,6 +38,7 @@ class _ProfileViewState extends State<ProfileView> {
         setState(() {
           userName = docSnap.get('name');
           userEmail = docSnap.get('email');
+          userSpecialty = docSnap.get('specialty');
         });
       }
     }
@@ -112,7 +114,7 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                     Container(
                       width: double.infinity,
-                      height: 300,
+                      height: 350,
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
@@ -148,6 +150,17 @@ class _ProfileViewState extends State<ProfileView> {
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400)),
                             icon: Icons.mail,
+                          ),
+                          SizedBox(height: 35),
+                          InfoTile(
+                            title: "Specialty :",
+                            onTap: () {},
+                            child: Text(userSpecialty ?? "Not set",
+                                style: TextStyle(
+                                    color: const Color.fromARGB(115, 0, 0, 0),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400)),
+                            icon: Icons.add_chart_outlined,
                           ),
                           SizedBox(height: 35),
                           InfoTile(
