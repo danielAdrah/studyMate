@@ -19,6 +19,13 @@ class BookedCourses extends StatefulWidget {
 
 class _BookedCoursesState extends State<BookedCourses> {
   final storeController = Get.put(StoreController());
+
+  @override
+  void initState() {
+    storeController.fetchBookedCoursesStream();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,7 +91,10 @@ class _BookedCoursesState extends State<BookedCourses> {
                                 return BookedCourseCell(
                                   courseName: bookedCourse['courseName'],
                                   onTap: () {
-                                    Get.to(BookedCourseDetail());
+                                    Get.to(BookedCourseDetail(
+                                      courseID: bookedCourse['id'],
+                                      courseName: bookedCourse['courseName'],
+                                    ));
                                   },
                                 );
                               });

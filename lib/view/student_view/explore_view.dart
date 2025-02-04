@@ -170,7 +170,7 @@ class _ExploreViewState extends State<ExploreView> {
                   delay: Duration(milliseconds: 1000),
                   child: Container(
                     width: double.infinity,
-                    height: 250,
+                    height: 300,
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(

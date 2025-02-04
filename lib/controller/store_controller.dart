@@ -11,6 +11,7 @@ class StoreController extends GetxController {
   RxBool courseLoading = false.obs;
   RxBool allcourseLoading = false.obs;
   RxBool addCourseLoading = false.obs;
+  RxDouble courseRate = RxDouble(0.0);
 
   CollectionReference coursesCollection =
       FirebaseFirestore.instance.collection('courses');
@@ -116,15 +117,17 @@ class StoreController extends GetxController {
   }
 
 //======RESERVE A COURSE
-  Future<void> reserveCourse(String courseName, courseField, professor, date, time) async {
+  Future<void> reserveCourse(
+      String courseName, courseField, professor, date, time, courseID) async {
     try {
       DocumentReference response = await bookedCoursesCollection.add({
         'professor': professor,
         'courseDate': date,
         'courseTime': time,
-        'courseName' : courseName,
-        'courseField' : courseField,
-        'id': FirebaseAuth.instance.currentUser!.uid,
+        'courseName': courseName,
+        'courseField': courseField,
+        'userID': FirebaseAuth.instance.currentUser!.uid,
+        'id': courseID,
       });
       print("======= done adding");
     } catch (e) {
@@ -137,10 +140,24 @@ class StoreController extends GetxController {
     return firestore.collection("bookedcourses").snapshots().map((snapshot) {
       return snapshot.docs.where((doc) {
         final bookedCourse = doc.data();
-        return bookedCourse['id'] == FirebaseAuth.instance.currentUser!.uid;
+        return bookedCourse['userID'] == FirebaseAuth.instance.currentUser!.uid;
       }).map((doc) {
         return doc.data();
       }).toList();
     });
+  }
+
+//=====SEND FEEDBACK
+  sendFeedBack(String courseID, comment, rate) async {
+    try {
+      CollectionReference feedback = FirebaseFirestore.instance
+          .collection('courses')
+          .doc(courseID)
+          .collection('feedback');
+      await feedback.add({'comment': comment, 'rate': rate});
+      print("done feedbackkkk");
+    } catch (e) {
+      print("===error feedback ${e.toString()}");
+    }
   }
 }

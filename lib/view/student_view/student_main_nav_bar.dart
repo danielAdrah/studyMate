@@ -34,7 +34,7 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
         elevation: 0.5,
         child: SizedBox(
           child: Row(
-            // mainAxisAlignment: MainAxisAlignment.,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
                   onPressed: () {
@@ -46,6 +46,8 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
                   icon: SvgPicture.asset(
                     "assets/img/explore.svg",
                     color: selectTab == 0 ? TColor.primary : Colors.grey,
+                    height: 50,
+                    width: 50,
                   )
                   //  Image.asset(
                   //   "assets/img/exploreIcon.png",
@@ -75,6 +77,8 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
                   icon: SvgPicture.asset(
                     "assets/img/chat.svg",
                     color: selectTab == 2 ? TColor.primary : Colors.grey,
+                    height: 50,
+                    width: 50,
                   )),
               IconButton(
                   onPressed: () {
@@ -86,6 +90,8 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
                   icon: SvgPicture.asset(
                     "assets/img/course.svg",
                     color: selectTab == 3 ? TColor.primary : Colors.grey,
+                    height: 50,
+                    width: 50,
                   )),
             ],
           ),

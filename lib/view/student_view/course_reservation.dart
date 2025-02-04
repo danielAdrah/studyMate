@@ -78,52 +78,83 @@ class _CourseReservationState extends State<CourseReservation> {
                       //this a dropDown list to choose a professor
                       Expanded(
                         child: Container(
-                          decoration: BoxDecoration(
-                              color: TColor.white,
-                              borderRadius: BorderRadius.circular(15)),
-                          // width: 100,
-                          child: DropdownButton<String>(
-                            hint: Obx(() => coursCont
-                                    .professorName.value.isEmpty
-                                ? Text(
-                                    " ",
-                                    style: TextStyle(
-                                        color: TColor.black.withOpacity(0.5)),
-                                  )
-                                : Text(coursCont.professorName.value,
-                                    style: TextStyle(color: TColor.black))),
-                            items: professor.map((String service) {
-                              return DropdownMenuItem<String>(
-                                value: service,
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      service,
-                                      style: TextStyle(
-                                          color: TColor.black.withOpacity(0.5)),
+                            decoration: BoxDecoration(
+                                color: TColor.white,
+                                borderRadius: BorderRadius.circular(15)),
+                            // width: 100,
+                            child: StreamBuilder(
+                                stream: storeController.getProfessorStream(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Text(snapshot.error.toString());
+                                  }
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                        child: CircularProgressIndicator(
+                                            color: TColor.primary));
+                                  }
+                                  if (!snapshot.hasData ||
+                                      snapshot.data!.isEmpty) {
+                                    return Center(
+                                      child: Text(
+                                        "There are no profrssors yet",
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    );
+                                  }
+                                  return DropdownButton<String>(
+                                    hint: Obx(() => coursCont
+                                            .professorName.value.isEmpty
+                                        ? Text(
+                                            " ",
+                                            style: TextStyle(
+                                                color: TColor.black
+                                                    .withOpacity(0.5)),
+                                          )
+                                        : Text(coursCont.professorName.value,
+                                            style: TextStyle(
+                                                color: TColor.black))),
+                                    items: (snapshot.data
+                                            as List<Map<String, dynamic>>)
+                                        .map((Map<String, dynamic> entry) {
+                                      return DropdownMenuItem<String>(
+                                        value: entry[
+                                            'name'], // Assuming 'name' is the field containing the professor's name
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              entry['name'],
+                                              style: TextStyle(
+                                                color: TColor.black
+                                                    .withOpacity(0.5),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+
+                                    iconSize: 30,
+                                    icon: Icon(Icons.keyboard_arrow_down),
+                                    isExpanded: true,
+
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 12),
+                                    underline: Text(
+                                      "",
+                                      style: TextStyle(color: TColor.white),
                                     ),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-
-                            iconSize: 30,
-                            icon: Icon(Icons.keyboard_arrow_down),
-                            isExpanded: true,
-
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            underline: Text(
-                              "",
-                              style: TextStyle(color: TColor.white),
-                            ),
-                            onChanged: (String? val) {
-                              if (val != null) {
-                                coursCont.professorName.value = val;
-                                print(coursCont.professorName.value);
-                              }
-                            }, //o Implement your logic here when a selection changes
-                          ),
-                        ),
+                                    onChanged: (String? val) {
+                                      if (val != null) {
+                                        coursCont.professorName.value = val;
+                                        print(coursCont.professorName.value);
+                                      }
+                                    }, //o Implement your logic here when a selection changes
+                                  );
+                                })),
                       ),
                     ],
                   ),
@@ -200,6 +231,7 @@ class _CourseReservationState extends State<CourseReservation> {
                             coursCont.professorName.value,
                             courseDate.text,
                             courseTime.text,
+                            widget.courseID,
                           );
                           print("done");
                           clearFields();

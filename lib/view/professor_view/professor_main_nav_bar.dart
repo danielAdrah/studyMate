@@ -34,7 +34,7 @@ class _ProfessorMainNavBarState extends State<ProfessorMainNavBar> {
         elevation: 0.5,
         child: SizedBox(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
                   onPressed: () {
@@ -46,12 +46,9 @@ class _ProfessorMainNavBarState extends State<ProfessorMainNavBar> {
                   icon: SvgPicture.asset(
                     "assets/img/explore.svg",
                     color: selectTab == 0 ? TColor.primary : Colors.grey,
-                  )
-                  //  Image.asset(
-                  //   "assets/img/exploreIcon.png",
-                  //   color: selectTab == 0 ? TColor.primary : Colors.grey,
-                  // ),
-                  ),
+                    height: 50,
+                    width: 50,
+                  )),
               IconButton(
                   onPressed: () {
                     setState(() {
@@ -62,6 +59,8 @@ class _ProfessorMainNavBarState extends State<ProfessorMainNavBar> {
                   icon: SvgPicture.asset(
                     "assets/img/noti.svg",
                     color: selectTab == 1 ? TColor.primary : Colors.grey,
+                    height: 50,
+                    width: 50,
                   )),
               IconButton(
                   onPressed: () {
@@ -73,6 +72,8 @@ class _ProfessorMainNavBarState extends State<ProfessorMainNavBar> {
                   icon: SvgPicture.asset(
                     "assets/img/chat.svg",
                     color: selectTab == 2 ? TColor.primary : Colors.grey,
+                    height: 50,
+                    width: 50,
                   )),
               IconButton(
                   onPressed: () {
@@ -84,6 +85,8 @@ class _ProfessorMainNavBarState extends State<ProfessorMainNavBar> {
                   icon: SvgPicture.asset(
                     "assets/img/course.svg",
                     color: selectTab == 3 ? TColor.primary : Colors.grey,
+                    height: 50,
+                    width: 50,
                   )),
             ],
           ),

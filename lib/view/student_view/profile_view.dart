@@ -114,7 +114,7 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                     Container(
                       width: double.infinity,
-                      height: 350,
+                      height: 400,
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
@@ -170,7 +170,7 @@ class _ProfileViewState extends State<ProfileView> {
                                 onTap: () {}, child: Text("Change Password")),
                             icon: Icons.security,
                           ),
-                          SizedBox(height: 25),
+                          SizedBox(height: 30),
                           // Padding(
                           //   padding:
                           //       const EdgeInsets.symmetric(horizontal: 130),

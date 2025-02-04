@@ -2,20 +2,26 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:studymate/common_widgets/custom_button.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../../common_widgets/custom_app_bar.dart';
+import '../../controller/store_controller.dart';
 import '../../theme.dart';
 
 class BookedCourseDetail extends StatefulWidget {
-  const BookedCourseDetail({super.key});
-
+  const BookedCourseDetail(
+      {super.key, required this.courseID, required this.courseName});
+  final String courseID;
+  final String courseName;
   @override
   State<BookedCourseDetail> createState() => _BookedCourseDetailState();
 }
 
 class _BookedCourseDetailState extends State<BookedCourseDetail> {
+  final storeController = Get.put(StoreController());
   final comment = TextEditingController();
+  double rate = 0.0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +43,7 @@ class _BookedCourseDetailState extends State<BookedCourseDetail> {
                   delay: Duration(milliseconds: 600),
                   child: Center(
                       child: CourseCell2(
-                    courseName: "Banking",
+                    courseName: widget.courseName,
                     onTap: () {},
                   )),
                 ),
@@ -77,6 +83,8 @@ class _BookedCourseDetailState extends State<BookedCourseDetail> {
                           ),
                           onRatingUpdate: (rating) {
                             print(rating);
+                            rate = rating;
+                            setState(() {});
                           },
                         ),
                         SizedBox(height: 30),
@@ -121,7 +129,11 @@ class _BookedCourseDetailState extends State<BookedCourseDetail> {
                   child: Center(
                     child: CustomButton(
                       title: "Submit",
-                      onTap: () {},
+                      onTap: () {
+                        storeController.sendFeedBack(
+                            widget.courseID, comment.text, rate);
+                        comment.clear();
+                      },
                     ),
                   ),
                 ),
