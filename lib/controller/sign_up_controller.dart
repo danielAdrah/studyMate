@@ -83,15 +83,6 @@ class SignUpController extends GetxController {
             print("no role");
           }
         }
-        // String? userRole = await determineUserRole(credential.user!.uid);
-
-        // if (userRole == "Student") {
-        //   Get.off(StudentMainNavBar());
-        // } else if (userRole == "professor") {
-        //   Get.off(ProfessorMainNavBar());
-        // } else {
-        //   print("wrong role");
-        // }
       } else {
         logInLoading.value = false;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -141,8 +132,8 @@ class SignUpController extends GetxController {
   }
 
   //=========
-  Future signUp(
-      String mail, passWord, accountType, specialty,name, BuildContext context) async {
+  Future signUp(String mail, passWord, accountType, specialty, name,
+      BuildContext context) async {
     try {
       signUpLoading.value = true;
       final credential =

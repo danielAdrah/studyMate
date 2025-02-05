@@ -22,6 +22,8 @@ class _ProfessorCourseViewState extends State<ProfessorCourseView> {
   final controller = Get.put(StoreController());
   final courseName = TextEditingController();
   final courseField = TextEditingController();
+  final newCourseName = TextEditingController();
+  final newCourseField = TextEditingController();
 
   void clearFields() {
     courseName.clear();
@@ -82,8 +84,22 @@ class _ProfessorCourseViewState extends State<ProfessorCourseView> {
                                       controller.profrssorCourse[index];
                                   return ProfessorCourseCell(
                                     courseName: course['courseName'],
-                                    onTapDelete: () {},
-                                    onTapEdit: () {},
+                                    onTapDelete: () {
+                                      controller.deleteCourse(course.id);
+                                    },
+                                    onTapEdit: () {
+                                      customDialog(context, newCourseName,
+                                          newCourseField, () {
+                                        controller.updateCourse(
+                                          course.id,
+                                          newCourseName.text,
+                                          newCourseField.text,
+                                        );
+                                        newCourseName.clear();
+                                        newCourseField.clear();
+                                        Get.back();
+                                      }, "Edit");
+                                    },
                                   );
                                 }),
                           )),
@@ -101,7 +117,7 @@ class _ProfessorCourseViewState extends State<ProfessorCourseView> {
                                     courseName.text, courseField.text);
                                 clearFields();
                                 Get.back();
-                              });
+                              }, "Create");
                             }))),
                 SizedBox(height: 20),
               ],
@@ -183,7 +199,7 @@ class ProfessorCourseCell extends StatelessWidget {
 
 //==========this is a dialog==============
 Future<dynamic> customDialog(BuildContext context, TextEditingController name,
-    TextEditingController field, void Function()? onTapCreate) {
+    TextEditingController field, void Function()? onTapCreate, String title) {
   return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -230,7 +246,7 @@ Future<dynamic> customDialog(BuildContext context, TextEditingController name,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Create",
+                          title,
                           style: TextStyle(
                               color: TColor.white, fontWeight: FontWeight.w600),
                         ),

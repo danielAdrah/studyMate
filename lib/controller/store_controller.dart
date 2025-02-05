@@ -154,10 +154,40 @@ class StoreController extends GetxController {
           .collection('courses')
           .doc(courseID)
           .collection('feedback');
-      await feedback.add({'comment': comment, 'rate': rate});
-      print("done feedbackkkk");
+      await feedback.add({
+        'comment': comment,
+        'rate': rate,
+        'userID': FirebaseAuth.instance.currentUser!.uid,
+      });
+      print("======done feedbackkkk");
     } catch (e) {
       print("===error feedback ${e.toString()}");
+    }
+  }
+
+  //========DELETE COURSE
+  deleteCourse(String courseID) async {
+    try {
+      coursesCollection.doc(courseID).delete();
+      print("======done deleteing");
+      await getProfessorCourse();
+      await getAllCourse();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  //========UPDATE A COURSE
+  updateCourse(String courseID, newName, newField) async {
+    try {
+      coursesCollection
+          .doc(courseID)
+          .update({'courseName': newName, 'courseField': newField});
+      print("======done updating");
+      await getProfessorCourse();
+      await getAllCourse();
+    } catch (e) {
+      print(e.toString());
     }
   }
 }
