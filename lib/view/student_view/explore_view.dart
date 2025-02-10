@@ -10,6 +10,10 @@ import '../../common_widgets/custome_text_field.dart';
 import '../../common_widgets/professor_cell.dart';
 import '../../controller/store_controller.dart';
 import '../../theme.dart';
+import 'community_view/first_year.dart';
+import 'community_view/fourth_year.dart';
+import 'community_view/second_year.dart';
+import 'community_view/third_year.dart';
 import 'course_reservation.dart';
 
 class ExploreView extends StatefulWidget {
@@ -240,13 +244,29 @@ class _ExploreViewState extends State<ExploreView> {
                             //     ),
                             //   ],
                             // ),
-                            CommunityBtn(title: "First Year", onTap: () {}),
+                            CommunityBtn(
+                                title: "First Year",
+                                onTap: () {
+                                  Get.to(FirstYear());
+                                }),
                             SizedBox(height: 10),
-                            CommunityBtn(title: "Second Year", onTap: () {}),
+                            CommunityBtn(
+                                title: "Second Year",
+                                onTap: () {
+                                  Get.to(SecondYear());
+                                }),
                             SizedBox(height: 10),
-                            CommunityBtn(title: "Third Year", onTap: () {}),
+                            CommunityBtn(
+                                title: "Third Year",
+                                onTap: () {
+                                  Get.to(ThirdYear());
+                                }),
                             SizedBox(height: 10),
-                            CommunityBtn(title: "Fourth Year", onTap: () {}),
+                            CommunityBtn(
+                                title: "Fourth Year",
+                                onTap: () {
+                                  Get.to(FourthYear());
+                                }),
                           ],
                         ),
                       ],

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, must_be_immutable, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, must_be_immutable, prefer_const_literals_to_create_immutables, avoid_print
 
 import 'package:flutter/material.dart';
 
@@ -8,12 +8,13 @@ class BookedCourseCell extends StatelessWidget {
   BookedCourseCell({
     super.key,
     required this.courseName,
-    required this.onTap,
+    required this.onTap, required this.courseField,
 
     // required this.courseImg,
   });
   void Function()? onTap;
   final String courseName;
+  final String courseField;
 
   // final String courseImg;
 
@@ -60,7 +61,14 @@ class BookedCourseCell extends StatelessWidget {
                     fontSize: 13,
                     fontWeight: FontWeight.w600),
               ),
-              //here we will display the course rate
+              SizedBox(height: 5),
+              Text(
+                courseField,
+                style: TextStyle(
+                    color: TColor.black,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600),
+              ),
             ],
           ),
         ),

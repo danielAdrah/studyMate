@@ -7,17 +7,41 @@ import 'package:get/get.dart';
 class StoreController extends GetxController {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final profrssorCourse = RxList<QueryDocumentSnapshot>.from([]);
-  final RxList allCourse = [].obs;
+  RxList<QueryDocumentSnapshot> allCourse = <QueryDocumentSnapshot>[].obs;
+  RxList<QueryDocumentSnapshot> firstPost = <QueryDocumentSnapshot>[].obs;
+  RxList<QueryDocumentSnapshot> secondPost = <QueryDocumentSnapshot>[].obs;
+  RxList<QueryDocumentSnapshot> thirdPost = <QueryDocumentSnapshot>[].obs;
+  RxList<QueryDocumentSnapshot> fourthPost = <QueryDocumentSnapshot>[].obs;
+
+  RxString userName = "".obs;
   RxBool courseLoading = false.obs;
   RxBool allcourseLoading = false.obs;
   RxBool addCourseLoading = false.obs;
   RxDouble courseRate = RxDouble(0.0);
+  RxInt count = RxInt(0);
+  RxList<QueryDocumentSnapshot> posts = <QueryDocumentSnapshot>[].obs;
 
   CollectionReference coursesCollection =
       FirebaseFirestore.instance.collection('courses');
 
   CollectionReference bookedCoursesCollection =
       FirebaseFirestore.instance.collection('bookedcourses');
+
+  CollectionReference postsCollection =
+      FirebaseFirestore.instance.collection('posts');
+
+  Future<String?> getCurrentUserName() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      userName.value = userDoc.data()!['name'];
+      return userDoc.data()!['name'];
+    }
+    return null;
+  }
 
   //========GET ALL THE PROFESSORS
   Stream<List<Map<String, dynamic>>> getProfessorStream() {
@@ -36,6 +60,7 @@ class StoreController extends GetxController {
     return firestore.collection("users").snapshots().map((snapshot) {
       return snapshot.docs.where((doc) {
         final userData = doc.data();
+        userName.value = userData['name'];
         return userData['role'] == 'Student';
       }).map((doc) {
         return doc.data();
@@ -189,5 +214,164 @@ class StoreController extends GetxController {
     } catch (e) {
       print(e.toString());
     }
+  }
+
+//UPDATE USER INFO
+  updateUserInfo(String userId, newName, newSpecailty) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'name': newName,
+        'specialty': newSpecailty,
+      });
+      print("done update");
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+//=======ADD POST
+  Future<void> addPost(String postContent, year) async {
+    try {
+      DocumentReference response = await postsCollection.add({
+        'user': FirebaseAuth.instance.currentUser!.email,
+        'content': postContent,
+        'timestamp': Timestamp.now(),
+        'year': year,
+      });
+      fetchPostStream();
+      await getFirstPost();
+      await getSecondPost();
+      await getThirdPost();
+      await getFourthPost();
+      print("=======done post");
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+//======GET ALL POSTS
+  Stream<List<Map<String, dynamic>>> fetchPostStream() {
+    return firestore
+        .collection("posts")
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final post = doc.data();
+
+        return post;
+      }).toList();
+    });
+  }
+
+//  FETCH FIRST YEAR POST
+  Future<void> getFirstPost() async {
+    try {
+      allcourseLoading.value = true;
+      QuerySnapshot data = await FirebaseFirestore.instance
+          .collection("posts")
+          .where('year', isEqualTo: 'firstYear')
+          .get();
+      print('Number of all posts fetched: ${data.docs.length}');
+      firstPost.value = data.docs;
+      // allcourseLoading.value = false;
+    } catch (e) {
+      // allcourseLoading.value = false;
+      print("===========${e.toString()}");
+    }
+  }
+
+  //  FETCH SECOND YEAR POST
+  Future<void> getSecondPost() async {
+    try {
+      allcourseLoading.value = true;
+      QuerySnapshot data = await FirebaseFirestore.instance
+          .collection("posts")
+          .where('year', isEqualTo: 'secondYear')
+          .get();
+      print('Number of all posts fetched: ${data.docs.length}');
+      secondPost.value = data.docs;
+      // allcourseLoading.value = false;
+    } catch (e) {
+      // allcourseLoading.value = false;
+      print("===========${e.toString()}");
+    }
+  }
+
+  //  FETCH THIRD YEAR POST
+  Future<void> getThirdPost() async {
+    try {
+      QuerySnapshot data = await FirebaseFirestore.instance
+          .collection("posts")
+          .where('year', isEqualTo: 'thirdYear')
+          .get();
+      print('Number of all posts fetched: ${data.docs.length}');
+      thirdPost.value = data.docs;
+    } catch (e) {
+      print("===========${e.toString()}");
+    }
+  }
+
+  //  FETCH FOURTH YEAR POST
+  Future<void> getFourthPost() async {
+    try {
+      QuerySnapshot data = await FirebaseFirestore.instance
+          .collection("posts")
+          .where('year', isEqualTo: 'fourthYear')
+          .get();
+      print('Number of all posts fetched: ${data.docs.length}');
+      fourthPost.value = data.docs;
+    } catch (e) {
+      print("===========${e.toString()}");
+    }
+  }
+
+//====GET THE POST OF EACH YEAR
+  Stream<List<Map<String, dynamic>>> fetchFirstPostStream(String year) {
+    return firestore
+        .collection("posts")
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.where((doc) {
+        final post = doc.data();
+
+        return post['year'] == year;
+      }).map((doc) {
+        return doc.data();
+      }).toList();
+    });
+  }
+
+//=====ADD COMMENTS
+  addComment(String comment, postID) async {
+    try {
+      await postsCollection.doc(postID).collection('comments').add({
+        'comment': comment,
+        'user': FirebaseAuth.instance.currentUser!.email,
+        'timestamp': Timestamp.now(),
+      });
+      fetchPostStream();
+      await getFirstPost();
+      print("done comment");
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+//=====FETCH THE COMMENTS
+  Stream<List<Map<String, dynamic>>> fetchFirstCommentStream(String postID) {
+    return firestore
+        .collection("posts")
+        .doc(postID)
+        .collection('comments')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final comment = doc.data();
+        return comment;
+      }).toList();
+    });
   }
 }

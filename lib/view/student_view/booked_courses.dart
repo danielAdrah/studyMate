@@ -59,7 +59,7 @@ class _BookedCoursesState extends State<BookedCourses> {
                   delay: Duration(milliseconds: 750),
                   child: SizedBox(
                     width: double.infinity,
-                    height: 150,
+                    height: 165,
                     child: StreamBuilder(
                         stream: storeController.fetchBookedCoursesStream(),
                         builder: (context, snapshot) {
@@ -90,6 +90,7 @@ class _BookedCoursesState extends State<BookedCourses> {
                                 var bookedCourse = snapshot.data![index];
                                 return BookedCourseCell(
                                   courseName: bookedCourse['courseName'],
+                                  courseField: bookedCourse['courseField'],
                                   onTap: () {
                                     Get.to(BookedCourseDetail(
                                       courseID: bookedCourse['id'],

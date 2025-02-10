@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sort_child_properties_last
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sort_child_properties_last, avoid_print
 
 import 'dart:io';
 
@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:studymate/controller/store_controller.dart';
 
 import '../../common_widgets/custome_text_field.dart';
 import '../../controller/cours_controller.dart';
@@ -21,14 +22,20 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   final controller = Get.put(CoursController());
+  final storeController = Get.put(StoreController());
   final newName = TextEditingController();
-  final newMail = TextEditingController();
+  final newSpecailty = TextEditingController();
   final newPass = TextEditingController();
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   String? userName;
   String? userEmail;
   String? userSpecialty;
+
+  clearField() {
+    newName.clear();
+    newSpecailty.clear();
+  }
 
   Future<void> fetchUserData() async {
     final user = auth.currentUser;
@@ -41,6 +48,19 @@ class _ProfileViewState extends State<ProfileView> {
           userSpecialty = docSnap.get('specialty');
         });
       }
+    }
+  }
+
+  updateUserInfo(String userId, newName, newSpecailty) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'name': newName,
+        'specialty': newSpecailty,
+      });
+      await fetchUserData();
+      print("done update");
+    } catch (e) {
+      print(e.toString());
     }
   }
 
@@ -203,8 +223,13 @@ class _ProfileViewState extends State<ProfileView> {
                           CommunityBtn(
                               title: "Update",
                               onTap: () {
-                                customDialog(
-                                    context, newName, newMail, newPass);
+                                customDialog(context, newName, newSpecailty,
+                                    () {
+                                  updateUserInfo(auth.currentUser!.uid,
+                                      newName.text, newSpecailty.text);
+                                  Get.back();
+                                  clearField();
+                                });
                               }),
                         ],
                       ),
@@ -222,7 +247,7 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                     Container(
                       width: double.infinity,
-                      height: 170,
+                      height: 110,
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
@@ -252,19 +277,6 @@ class _ProfileViewState extends State<ProfileView> {
                               color: Colors.white,
                             ),
                             icon: Icons.logout,
-                          ),
-                          SizedBox(height: 35),
-                          InfoTile(
-                            title: "Delete Account",
-                            child: Icon(
-                              Icons.arrow_forward_ios,
-                              size: 20,
-                              color: Colors.white,
-                            ),
-                            onTap: () {
-                              warningDialog(context);
-                            },
-                            icon: Icons.delete,
                           ),
                         ],
                       ),
@@ -336,8 +348,12 @@ class InfoTile extends StatelessWidget {
 }
 
 //==========this is a dialog==============
-Future<dynamic> customDialog(BuildContext context, TextEditingController name,
-    TextEditingController mail, TextEditingController pass) {
+Future<dynamic> customDialog(
+  BuildContext context,
+  TextEditingController name,
+  TextEditingController specialty,
+  void Function()? updateOnTap,
+) {
   return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -360,8 +376,8 @@ Future<dynamic> customDialog(BuildContext context, TextEditingController name,
               ),
               SizedBox(height: 25),
               CustomTextForm(
-                hinttext: "New Mail",
-                mycontroller: mail,
+                hinttext: "New Specialty",
+                mycontroller: specialty,
                 secure: false,
               ),
               SizedBox(height: 25),
@@ -372,87 +388,7 @@ Future<dynamic> customDialog(BuildContext context, TextEditingController name,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 InkWell(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 13, horizontal: 30),
-                    decoration: BoxDecoration(
-                      color: TColor.primary,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "OK",
-                          style: TextStyle(
-                              color: TColor.white, fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8),
-                InkWell(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 13, horizontal: 15),
-                    decoration: BoxDecoration(
-                      color: TColor.white,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Cancel",
-                          style: TextStyle(
-                              color: TColor.primary,
-                              fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      });
-}
-
-//==========this is warning dialog==============
-Future<dynamic> warningDialog(BuildContext context) {
-  return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          icon: Icon(
-            Icons.warning_amber,
-            size: 50,
-            color: TColor.primary,
-          ),
-          backgroundColor: TColor.background,
-          title: Center(
-            child: Text(
-              "Are you sure you want to delete this account ?",
-              style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 19,
-                  color: TColor.black),
-            ),
-          ),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Get.back();
-                  },
+                  onTap: updateOnTap,
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 13, horizontal: 30),
                     decoration: BoxDecoration(
