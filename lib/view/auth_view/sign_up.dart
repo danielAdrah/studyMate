@@ -20,7 +20,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  List<String> accountType = ["Student", "Professor"];
+  List<String> accountType = ["Student", "Professor","Admin"];
   List<String> studentSpecailty = [
     "Programing Model",
     "Machine Learning",

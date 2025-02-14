@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 
 class StoreController extends GetxController {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
   final profrssorCourse = RxList<QueryDocumentSnapshot>.from([]);
   RxList<QueryDocumentSnapshot> allCourse = <QueryDocumentSnapshot>[].obs;
   RxList<QueryDocumentSnapshot> firstPost = <QueryDocumentSnapshot>[].obs;
@@ -14,6 +16,11 @@ class StoreController extends GetxController {
   RxList<QueryDocumentSnapshot> fourthPost = <QueryDocumentSnapshot>[].obs;
 
   RxString userName = "".obs;
+  RxString userFullName = "".obs;
+  RxString userMail = "".obs;
+  RxString userSpecialty = "".obs;
+  RxBool userActivaty = false.obs;
+  //===
   RxBool courseLoading = false.obs;
   RxBool allcourseLoading = false.obs;
   RxBool addCourseLoading = false.obs;
@@ -373,5 +380,38 @@ class StoreController extends GetxController {
         return comment;
       }).toList();
     });
+  }
+
+//======
+  Future<void> deleteUser(String uid) async {
+    try {
+      // First, delete the user from Firebase Authentication
+      await auth.currentUser?.delete();
+
+      // Then, delete the user's data from Firestore
+      await firestore.collection('users').doc(uid).delete();
+
+      print('User deleted successfully');
+    } on FirebaseAuthException catch (e) {
+      print('Error deleting user: ${e.message}');
+      rethrow;
+    }
+  }
+
+  //=====FETCH USER INFO
+  Future<void> fetchUserData() async {
+    final user = auth.currentUser;
+    if (user != null) {
+      final docSnap = await firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+      if (docSnap.exists) {
+        userFullName.value = docSnap.get('name');
+        userMail.value = docSnap.get('email');
+        userSpecialty.value = docSnap.get('specialty');
+        userActivaty.value = docSnap.get('isActive');
+      }
+    }
   }
 }

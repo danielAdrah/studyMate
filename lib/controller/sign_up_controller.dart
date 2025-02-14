@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../view/admin_view/admin_home_page.dart';
 import '../view/auth_view/log_in.dart';
 import '../view/professor_view/professor_main_nav_bar.dart';
 import '../view/student_view/student_main_nav_bar.dart';
@@ -14,43 +15,12 @@ class SignUpController extends GetxController {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   RxString accountType = "".obs;
   TextEditingController specialty = TextEditingController();
+  RxBool isActive = true.obs;
 
   RxBool logInLoading = false.obs;
   RxBool signUpLoading = false.obs;
   //========
 
-  Future<String?> determineUserRole(String uid) async {
-    try {
-      List<Map<String, dynamic>> allDocuments = await FirebaseFirestore.instance
-          .collection('students')
-          .doc(uid)
-          .get()
-          .then((value) => [value.data() ?? {}])
-          .then((value) async => [
-                ...value,
-                ...(await FirebaseFirestore.instance
-                    .collection('professors')
-                    .doc(uid)
-                    .get()
-                    .then((doc) => [doc.data() ?? {}]))
-              ]);
-
-      String? role = allDocuments.firstWhereOrNull(
-              (element) => element.containsKey('role'))?['role'] ??
-          null;
-
-      if (role == null) {
-        print('User not found in either Students or Professors collection');
-      }
-
-      return role;
-    } catch (e) {
-      print('Error fetching user role: $e');
-      return null;
-    }
-  }
-
-//===========
   Future logIn(String mail, passWord, BuildContext context) async {
     try {
       logInLoading.value = true;
@@ -79,6 +49,8 @@ class SignUpController extends GetxController {
             Get.off(StudentMainNavBar());
           } else if (role == "Professor") {
             Get.off(ProfessorMainNavBar());
+          } else if (role == "Admin") {
+            Get.off(AdminHomePage());
           } else {
             print("no role");
           }
@@ -111,26 +83,6 @@ class SignUpController extends GetxController {
     }
   }
 
-//===========
-  Future<void> addUserToFirestore(
-      User user, String accountType, nameController) async {
-    DocumentReference? docRef;
-
-    if (accountType == "Student") {
-      docRef = firestore.collection("students").doc(user.uid);
-    } else if (accountType == "professor") {
-      docRef = firestore.collection("professors").doc(user.uid);
-    }
-
-    await docRef!.set({
-      'uid': user.uid,
-      'email': user.email!,
-      'name': nameController,
-      'role': accountType,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
-  }
-
   //=========
   Future signUp(String mail, passWord, accountType, specialty, name,
       BuildContext context) async {
@@ -153,9 +105,10 @@ class SignUpController extends GetxController {
         'role': accountType,
         'specialty': specialty,
         'createdAt': FieldValue.serverTimestamp(),
+        'isActive': isActive.value,
       });
       print("done after added");
-      Get.to(LogIn());
+      Get.off(LogIn());
       signUpLoading.value = false;
     } on FirebaseAuthException catch (e) {
       signUpLoading.value = false;

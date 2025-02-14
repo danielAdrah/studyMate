@@ -33,6 +33,7 @@ class _ProfessorCourseViewState extends State<ProfessorCourseView> {
   @override
   void initState() {
     controller.getProfessorCourse();
+    controller.fetchUserData();
     super.initState();
   }
 
@@ -111,13 +112,21 @@ class _ProfessorCourseViewState extends State<ProfessorCourseView> {
                         child: CustomButton(
                             title: "Add Course",
                             onTap: () {
-                              customDialog(context, courseName, courseField,
-                                  () {
-                                controller.addCourse(
-                                    courseName.text, courseField.text);
-                                clearFields();
-                                Get.back();
-                              }, "Create");
+                              if (controller.userActivaty.value == true) {
+                                customDialog(context, courseName, courseField,
+                                    () {
+                                  controller.addCourse(
+                                      courseName.text, courseField.text);
+                                  clearFields();
+                                  Get.back();
+                                }, "Create");
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content:
+                                          Text("This account is anActive")),
+                                );
+                              }
                             }))),
                 SizedBox(height: 20),
               ],
@@ -173,9 +182,9 @@ class ProfessorCourseCell extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 color: TColor.primary,
               ),
-              // child: Center(
-              //   child: Image.asset(courseImg),
-              // ),
+              child: Center(
+                child: Image.asset("assets/img/online-course.png"),
+              ),
             ),
             SizedBox(height: 6),
             Text(

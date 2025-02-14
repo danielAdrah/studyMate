@@ -7,6 +7,9 @@ import 'package:studymate/view/auth_view/cover_page.dart';
 import 'package:studymate/view/professor_view/professor_main_nav_bar.dart';
 import 'package:studymate/view/student_view/student_main_nav_bar.dart';
 
+import '../admin_view/admin_home_page.dart';
+import 'log_in.dart';
+
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
@@ -22,11 +25,14 @@ class _AuthGateState extends State<AuthGate> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const CoverPage();
+            return const LogIn();
           }
 
           return FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance.collection('users').doc(snapshot.data!.uid).get(),
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(snapshot.data!.uid)
+                .get(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return const CoverPage();
@@ -44,6 +50,8 @@ class _AuthGateState extends State<AuthGate> {
                   return const StudentMainNavBar();
                 case 'Professor':
                   return const ProfessorMainNavBar();
+                case 'Admin':
+                  return const AdminHomePage();
                 default:
                   print('Unknown role: $role');
                   return const CoverPage();

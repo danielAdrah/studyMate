@@ -68,7 +68,9 @@ class _FirstYearState extends State<FirstYear> {
                       ))
                 ],
               ),
+         
             ),
+       
             SizedBox(
               width: double.infinity,
               child: Obx(

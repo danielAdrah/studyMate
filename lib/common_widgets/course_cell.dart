@@ -10,14 +10,13 @@ class CourseCell extends StatelessWidget {
     required this.courseName,
     required this.courseField,
     required this.onTap,
-   
+
     // required this.courseImg,
   });
   void Function()? onTap;
   final String courseName;
   final String courseField;
   // final String courseImg;
-
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +49,9 @@ class CourseCell extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   color: TColor.primary,
                 ),
-                // child: Center(
-                //   child: Image.asset(courseImg),
-                // ),
+                child: Center(
+                  child: Image.asset("assets/img/online-course.png"),
+                ),
               ),
               SizedBox(height: 6),
               Text(

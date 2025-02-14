@@ -13,32 +13,31 @@ import '../../controller/cours_controller.dart';
 import '../../theme.dart';
 import '../auth_view/log_in.dart';
 
-class ProfileView extends StatefulWidget {
-  const ProfileView({super.key});
+class AdminProfile extends StatefulWidget {
+  const AdminProfile({super.key});
 
   @override
-  State<ProfileView> createState() => _ProfileViewState();
+  State<AdminProfile> createState() => _AdminProfileState();
 }
 
-class _ProfileViewState extends State<ProfileView> {
+class _AdminProfileState extends State<AdminProfile> {
   final controller = Get.put(CoursController());
   final storeController = Get.put(StoreController());
   final newName = TextEditingController();
-  final newSpecailty = TextEditingController();
   final newPass = TextEditingController();
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  String? userName;
+  String? userEmail;
 
   clearField() {
     newName.clear();
-    newSpecailty.clear();
   }
 
-  updateUserInfo(String userId, newName, newSpecailty) async {
+  updateUserInfo(String userId, newName) async {
     try {
       await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'name': newName,
-        'specialty': newSpecailty,
       });
       storeController.fetchUserData();
       print("done update");
@@ -55,6 +54,7 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: TColor.background,
       body: SafeArea(
@@ -116,7 +116,7 @@ class _ProfileViewState extends State<ProfileView> {
                       ),
                       Container(
                         width: double.infinity,
-                        height: 400,
+                        height: height / 2.5,
                         decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(
@@ -155,17 +155,6 @@ class _ProfileViewState extends State<ProfileView> {
                             ),
                             SizedBox(height: 35),
                             InfoTile(
-                              title: "Specialty :",
-                              onTap: () {},
-                              child: Text(storeController.userSpecialty.value,
-                                  style: TextStyle(
-                                      color: const Color.fromARGB(115, 0, 0, 0),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400)),
-                              icon: Icons.add_chart_outlined,
-                            ),
-                            SizedBox(height: 35),
-                            InfoTile(
                               title: "Password :",
                               onTap: () {},
                               child: InkWell(
@@ -174,8 +163,8 @@ class _ProfileViewState extends State<ProfileView> {
                                       //this for sending an link to the email that the user forget its password
                                       await FirebaseAuth.instance
                                           .sendPasswordResetEmail(
-                                              email: storeController
-                                                  .userMail.value);
+                                        email: storeController.userMail.value,
+                                      );
 
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
@@ -189,42 +178,14 @@ class _ProfileViewState extends State<ProfileView> {
                               icon: Icons.security,
                             ),
                             SizedBox(height: 30),
-                            // Padding(
-                            //   padding:
-                            //       const EdgeInsets.symmetric(horizontal: 130),
-                            //   child: InkWell(
-                            //     onTap: () {
-                            //       customDialog(
-                            //           context, newName, newMail, newPass);
-                            //     },
-                            //     child: Container(
-                            //       padding: EdgeInsets.symmetric(
-                            //           vertical: 10, horizontal: 15),
-                            //       decoration: BoxDecoration(
-                            //         color: TColor.primary,
-                            //         borderRadius: BorderRadius.circular(25),
-                            //       ),
-                            //       child: Row(
-                            //         mainAxisAlignment: MainAxisAlignment.center,
-                            //         children: [
-                            //           Text(
-                            //             "Update",
-                            //             style: TextStyle(
-                            //                 color: TColor.white,
-                            //                 fontWeight: FontWeight.w600),
-                            //           ),
-                            //         ],
-                            //       ),
-                            //     ),
-                            //   ),
-                            // )
                             CommunityBtn(
                                 title: "Update",
                                 onTap: () {
-                                  customDialog(context, newName, newSpecailty,
-                                      () {
-                                    updateUserInfo(auth.currentUser!.uid,
-                                        newName.text, newSpecailty.text);
+                                  customDialog(context, newName, () {
+                                    updateUserInfo(
+                                      auth.currentUser!.uid,
+                                      newName.text,
+                                    );
                                     Get.back();
                                     clearField();
                                   });
@@ -350,7 +311,6 @@ class InfoTile extends StatelessWidget {
 Future<dynamic> customDialog(
   BuildContext context,
   TextEditingController name,
-  TextEditingController specialty,
   void Function()? updateOnTap,
 ) {
   return showDialog(
@@ -371,12 +331,6 @@ Future<dynamic> customDialog(
               CustomTextForm(
                 hinttext: "New Name",
                 mycontroller: name,
-                secure: false,
-              ),
-              SizedBox(height: 25),
-              CustomTextForm(
-                hinttext: "New Specialty",
-                mycontroller: specialty,
                 secure: false,
               ),
               SizedBox(height: 25),

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../theme.dart';
-import 'professor_chat_view.dart';
+import '../student_view/chat_view.dart';
 import 'professor_course_view.dart';
 import 'professor_explore.dart';
 import 'professor_notification.dart';
@@ -66,7 +66,7 @@ class _ProfessorMainNavBarState extends State<ProfessorMainNavBar> {
                   onPressed: () {
                     setState(() {
                       selectTab = 2;
-                      currentTabView = ProfessorChatView();
+                      currentTabView = ChatView();
                     });
                   },
                   icon: SvgPicture.asset(

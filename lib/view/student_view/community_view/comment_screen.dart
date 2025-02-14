@@ -96,7 +96,7 @@ class _CommentScreenState extends State<CommentScreen> {
                               leading: CircleAvatar(
                                 radius: 25,
                                 backgroundImage:
-                                    AssetImage("assets/img/pro_avatar.png"),
+                                    AssetImage("assets/img/woman.png"),
                               ),
                               title: Text(
                                 comment['user'],

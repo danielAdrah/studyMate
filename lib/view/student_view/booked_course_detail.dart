@@ -192,9 +192,9 @@ class CourseCell2 extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   color: TColor.primary,
                 ),
-                // child: Center(
-                //   child: Image.asset(courseImg),
-                // ),
+                child: Center(
+                  child: Image.asset("assets/img/online-course.png"),
+                ),
               ),
               SizedBox(height: 6),
               Text(

@@ -7,7 +7,9 @@ import 'package:get/get.dart';
 
 import '../../common_widgets/custom_app_bar.dart';
 import '../../controller/store_controller.dart';
+import '../../services/chat_service.dart';
 import '../../theme.dart';
+import 'chat_page.dart';
 
 class ChatView extends StatefulWidget {
   const ChatView({super.key});
@@ -18,7 +20,7 @@ class ChatView extends StatefulWidget {
 
 class _ChatViewState extends State<ChatView> {
   final FirebaseAuth auth = FirebaseAuth.instance;
-
+  final chatService = ChatService();
   final controller = Get.put(StoreController());
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,7 @@ class _ChatViewState extends State<ChatView> {
                   width: double.infinity,
                   height: height,
                   child: StreamBuilder(
-                      stream: controller.getStudentsStream(),
+                      stream: chatService.getAllUserStream(),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           return Text(snapshot.error.toString());
@@ -56,7 +58,7 @@ class _ChatViewState extends State<ChatView> {
                         if (snapshot.data == null || snapshot.data!.isEmpty) {
                           return Center(
                             child: Text(
-                              "There are no profrssors yet",
+                              "There are no users yet",
                               style: TextStyle(color: Colors.black),
                             ),
                           );
@@ -66,14 +68,20 @@ class _ChatViewState extends State<ChatView> {
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: snapshot.data!.length,
                           itemBuilder: (context, index) {
-                            var student = snapshot.data![index];
+                            var user = snapshot.data![index];
                             //here we make sure not to display the account that opening the app now
-                            if (student["email"] != auth.currentUser!.email) {
+                            if (user["email"] != auth.currentUser!.email &&
+                                user['role'] != 'Admin') {
                               return FadeInDown(
                                 delay: Duration(milliseconds: 500),
                                 child: ChatTile(
-                                  name: student["name"],
-                                  onTap: () {},
+                                  name: user["name"],
+                                  onTap: () {
+                                    Get.to(ChatPage(
+                                      receiverName: user["name"],
+                                      receiverID: user["uid"],
+                                    ));
+                                  },
                                 ),
                               );
                             } else {
@@ -120,7 +128,7 @@ class ChatTile extends StatelessWidget {
                       decoration: BoxDecoration(
                           color: TColor.primary, shape: BoxShape.circle),
                       child: CircleAvatar(
-                        backgroundImage: AssetImage("assets/img/user.png"),
+                        backgroundImage: AssetImage("assets/img/woman.png"),
                         radius: 30,
                       ),
                     ),

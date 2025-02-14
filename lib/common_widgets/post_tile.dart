@@ -37,7 +37,7 @@ class PostTile extends StatelessWidget {
             children: [
               const CircleAvatar(
                 radius: 25,
-                backgroundImage: AssetImage("assets/img/pro_avatar.png"),
+                backgroundImage: AssetImage("assets/img/woman.png"),
               ),
               const SizedBox(width: 8),
               Expanded(

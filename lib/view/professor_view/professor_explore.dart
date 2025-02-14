@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
 
 import 'package:animate_do/animate_do.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../../common_widgets/course_cell.dart';
 import 'package:get/get.dart';
 import '../../common_widgets/custom_app_bar.dart';
@@ -21,7 +21,7 @@ class ProfessorExplore extends StatefulWidget {
 
 class _ProfessorExploreState extends State<ProfessorExplore> {
   final FirebaseAuth auth = FirebaseAuth.instance;
-
+  bool haveCourseSearched = false;
   final searchCont = TextEditingController();
   final controller = Get.put(StoreController());
 
@@ -50,7 +50,20 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
                 SizedBox(height: 20),
                 FadeInDown(
                     delay: Duration(milliseconds: 600),
-                    child: SearchAndFilter(searchCont: searchCont)),
+                    child: SearchAndFilter(
+                      searchCont: searchCont,
+                      onChanged: (value) {
+                        if (value.isNotEmpty) {
+                          setState(() {
+                            haveCourseSearched = true; // Reset search state
+                          });
+                        } else {
+                          setState(() {
+                            haveCourseSearched = false; // Reset search state
+                          });
+                        }
+                      },
+                    )),
                 SizedBox(height: 25),
                 FadeInDown(
                   delay: Duration(milliseconds: 700),
@@ -94,9 +107,9 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
                                       profName: pro[
                                           'name'], //this is the name of the professor
                                       profImg:
-                                          "assets/img/pro_avatar.png", //this is the professor image
-                                      profField:
-                                          "DataBase", //this is the field which the professor studes in
+                                          "assets/img/woman.png", //this is the professor image
+                                      profField: pro[
+                                          'specialty'], //this is the field which the professor studes in
                                       onTap:
                                           () {} //this will navigate us to the selected professor detail page
                                       );
@@ -156,7 +169,9 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
                     width: double.infinity,
                     height: 150,
                     child: StreamBuilder(
-                        stream: controller.fetchCoursesStream(),
+                        stream: FirebaseFirestore.instance
+                            .collection("courses")
+                            .snapshots(),
                         builder: (context, snapshot) {
                           if (snapshot.hasError) {
                             return Text(snapshot.error.toString());
@@ -168,24 +183,55 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
                               color: Colors.red,
                             ));
                           }
-                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+
+                          // if (!snapshot.hasData) {
+                          //   return Text(
+                          //     "There are no courses yet",
+                          //     style: TextStyle(fontWeight: FontWeight.bold),
+                          //   );
+                          // }
+                          if (snapshot.hasData || snapshot.data != null) {
+                            List snap = snapshot.data!.docs;
+                            if (haveCourseSearched) {
+                              snap.removeWhere((e) {
+                                return !e
+                                    .data()["courseName"]
+                                    .toString()
+                                    .toLowerCase()
+                                    .startsWith(searchCont.text);
+                              });
+                              return ListView.builder(
+                                  physics: BouncingScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: snap.length,
+                                  itemBuilder: (context, index) {
+                                    var course = snap[index];
+                                    return CourseCell(
+                                      courseName: course['courseName'],
+                                      courseField: course['courseField'],
+                                      onTap: () {},
+                                    );
+                                  });
+                            } else {
+                              return ListView.builder(
+                                  physics: BouncingScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: snap.length,
+                                  itemBuilder: (context, index) {
+                                    var course = snap[index];
+                                    return CourseCell(
+                                      courseName: course['courseName'],
+                                      courseField: course['courseField'],
+                                      onTap: () {},
+                                    );
+                                  });
+                            }
+                          } else {
                             return Text(
                               "There are no courses yet",
                               style: TextStyle(fontWeight: FontWeight.bold),
                             );
                           }
-                          return ListView.builder(
-                              physics: BouncingScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (context, index) {
-                                var course = snapshot.data![index];
-                                return CourseCell(
-                                  courseName: course['courseName'],
-                                  courseField: course['courseField'],
-                                  onTap: () {},
-                                );
-                              });
                         }),
                   ),
                 ),
@@ -203,12 +249,13 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
 
 //==================search && filter===========================
 class SearchAndFilter extends StatelessWidget {
-  const SearchAndFilter({
+  SearchAndFilter({
     super.key,
     required this.searchCont,
+    this.onChanged,
   });
-
   final TextEditingController searchCont;
+  void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -229,17 +276,12 @@ class SearchAndFilter extends StatelessWidget {
           ),
           child: CustomTextForm(
             hinttext: "Search your teacher or course",
+            onChanged: onChanged,
             mycontroller: searchCont,
             secure: false,
             suffixIcon: Icons.search,
             color: TColor.primary,
           ),
-        ),
-        SizedBox(width: 9),
-        IconButton(
-          //this will filter the results
-          onPressed: () {},
-          icon: SvgPicture.asset("assets/img/filter.svg"),
         ),
       ],
     );

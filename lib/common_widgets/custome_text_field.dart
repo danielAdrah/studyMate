@@ -7,9 +7,11 @@ class CustomTextForm extends StatelessWidget {
   final void Function()? onTap;
   IconData? suffixIcon;
   Color? color;
+  FocusNode? focusNode;
   final bool secure;
   final TextEditingController mycontroller;
   final String? Function(String?)? validator;
+  void Function(String)? onChanged;
 
   CustomTextForm({
     super.key,
@@ -17,7 +19,9 @@ class CustomTextForm extends StatelessWidget {
     required this.mycontroller,
     this.validator,
     this.suffixIcon,
+    this.onChanged,
     this.color,
+    this.focusNode,
     required this.secure,
     this.onTap,
   });
@@ -27,6 +31,8 @@ class CustomTextForm extends StatelessWidget {
     return TextFormField(
       controller: mycontroller,
       obscureText: secure,
+      focusNode: focusNode,
+      onChanged: onChanged,
       validator: validator,
       style: TextStyle(color: Colors.black),
       decoration: InputDecoration(

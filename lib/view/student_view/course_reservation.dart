@@ -1,12 +1,15 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, use_build_context_synchronously
 
 import 'package:animate_do/animate_do.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:studymate/common_widgets/custom_button.dart';
 
 import '../../common_widgets/custom_app_bar.dart';
 import '../../controller/cours_controller.dart';
+import '../../controller/sign_up_controller.dart';
 import '../../controller/store_controller.dart';
 import '../../theme.dart';
 
@@ -25,14 +28,22 @@ class CourseReservation extends StatefulWidget {
 }
 
 class _CourseReservationState extends State<CourseReservation> {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final coursCont = Get.put(CoursController());
+  final authController = Get.put(SignUpController());
   final storeController = Get.put(StoreController());
   final courseDate = TextEditingController();
   final courseTime = TextEditingController();
-  List<String> professor = ["A", "B", "C"];
   void clearFields() {
     courseDate.clear();
     courseTime.clear();
+  }
+
+  @override
+  void initState() {
+    storeController.fetchUserData();
+    super.initState();
   }
 
   @override
@@ -219,22 +230,28 @@ class _CourseReservationState extends State<CourseReservation> {
                         //first we check if the user has select all the required data
                         //if he doesn't we will display for him a warring dialog
                         //if he selects everything we will proceed the booking method
-                        if (courseDate.text.isEmpty ||
-                            courseTime.text.isEmpty ||
-                            coursCont.professorName.value.isEmpty) {
-                          print("error");
-                          customDialog(context);
+                        if (storeController.userActivaty.value == true) {
+                          if (courseDate.text.isEmpty ||
+                              courseTime.text.isEmpty ||
+                              coursCont.professorName.value.isEmpty) {
+                            print("error");
+                            customDialog(context);
+                          } else {
+                            storeController.reserveCourse(
+                              widget.courseName,
+                              widget.courseField,
+                              coursCont.professorName.value,
+                              courseDate.text,
+                              courseTime.text,
+                              widget.courseID,
+                            );
+                            print("done");
+                            clearFields();
+                          }
                         } else {
-                          storeController.reserveCourse(
-                            widget.courseName,
-                            widget.courseField,
-                            coursCont.professorName.value,
-                            courseDate.text,
-                            courseTime.text,
-                            widget.courseID,
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Your account is inActive")),
                           );
-                          print("done");
-                          clearFields();
                         }
                       },
                     ),
@@ -390,9 +407,9 @@ class CourseCell2 extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   color: TColor.primary,
                 ),
-                // child: Center(
-                //   child: Image.asset(courseImg),
-                // ),
+                child: Center(
+                  child: Image.asset("assets/img/online-course.png"),
+                ),
               ),
               SizedBox(height: 6),
               Text(
