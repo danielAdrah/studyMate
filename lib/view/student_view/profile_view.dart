@@ -55,6 +55,7 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: TColor.background,
       body: SafeArea(
@@ -116,7 +117,7 @@ class _ProfileViewState extends State<ProfileView> {
                       ),
                       Container(
                         width: double.infinity,
-                        height: 400,
+                        height: height / 2.1,
                         decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(

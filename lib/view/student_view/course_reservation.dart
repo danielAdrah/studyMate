@@ -5,12 +5,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:studymate/common_widgets/custom_button.dart';
 
 import '../../common_widgets/custom_app_bar.dart';
 import '../../controller/cours_controller.dart';
 import '../../controller/sign_up_controller.dart';
 import '../../controller/store_controller.dart';
+import '../../services/notification_service.dart';
 import '../../theme.dart';
 
 class CourseReservation extends StatefulWidget {
@@ -30,6 +32,8 @@ class CourseReservation extends StatefulWidget {
 class _CourseReservationState extends State<CourseReservation> {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  GetStorage storage = GetStorage();
+  final notiService = NotificationService();
   final coursCont = Get.put(CoursController());
   final authController = Get.put(SignUpController());
   final storeController = Get.put(StoreController());
@@ -39,6 +43,7 @@ class _CourseReservationState extends State<CourseReservation> {
     courseDate.clear();
     courseTime.clear();
   }
+  // final String token =  notiService.getDeviceToken();
 
   @override
   void initState() {
@@ -230,6 +235,7 @@ class _CourseReservationState extends State<CourseReservation> {
                         //first we check if the user has select all the required data
                         //if he doesn't we will display for him a warring dialog
                         //if he selects everything we will proceed the booking method
+
                         if (storeController.userActivaty.value == true) {
                           if (courseDate.text.isEmpty ||
                               courseTime.text.isEmpty ||
@@ -245,6 +251,8 @@ class _CourseReservationState extends State<CourseReservation> {
                               courseTime.text,
                               widget.courseID,
                             );
+                            notiService.sendNotifications("body", "title",
+                                storeController.userToken.value);
                             print("done");
                             clearFields();
                           }

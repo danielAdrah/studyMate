@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print, unused_local_variable, prefer_const_constructors, use_build_context_synchronously, empty_catches, unused_catch_clause, unnecessary_null_in_if_null_operators
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -87,6 +88,7 @@ class SignUpController extends GetxController {
   Future signUp(String mail, passWord, accountType, specialty, name,
       BuildContext context) async {
     try {
+       String? token = await FirebaseMessaging.instance.getToken();
       signUpLoading.value = true;
       final credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -106,6 +108,7 @@ class SignUpController extends GetxController {
         'specialty': specialty,
         'createdAt': FieldValue.serverTimestamp(),
         'isActive': isActive.value,
+        'token': token,
       });
       print("done after added");
       Get.off(LogIn());

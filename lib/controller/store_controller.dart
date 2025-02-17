@@ -19,6 +19,7 @@ class StoreController extends GetxController {
   RxString userFullName = "".obs;
   RxString userMail = "".obs;
   RxString userSpecialty = "".obs;
+  RxString userToken = "".obs;
   RxBool userActivaty = false.obs;
   //===
   RxBool courseLoading = false.obs;
@@ -411,6 +412,7 @@ class StoreController extends GetxController {
         userMail.value = docSnap.get('email');
         userSpecialty.value = docSnap.get('specialty');
         userActivaty.value = docSnap.get('isActive');
+        userToken.value = docSnap.get('token');
       }
     }
   }

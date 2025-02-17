@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.kidfuel"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -45,3 +45,6 @@ android {
 flutter {
     source = "../.."
 }
+
+
+// flutter.compileSdkVersion

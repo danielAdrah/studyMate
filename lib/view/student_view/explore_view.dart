@@ -1,7 +1,8 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers, avoid_print
 
 import 'package:animate_do/animate_do.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -10,6 +11,7 @@ import '../../common_widgets/custom_app_bar.dart';
 import '../../common_widgets/custome_text_field.dart';
 import '../../common_widgets/professor_cell.dart';
 import '../../controller/store_controller.dart';
+import '../../services/notification_service.dart';
 import '../../theme.dart';
 import 'community_view/first_year.dart';
 import 'community_view/fourth_year.dart';
@@ -26,8 +28,10 @@ class ExploreView extends StatefulWidget {
 
 class _ExploreViewState extends State<ExploreView> {
   bool haveCourseSearched = false;
+  final firebaseMessaging = FirebaseMessaging.instance;
   final searchCont = TextEditingController();
   final controller = Get.put(StoreController());
+  final notiService = NotificationService();
 
   @override
   void initState() {
