@@ -11,7 +11,6 @@ import '../../common_widgets/custom_app_bar.dart';
 import '../../common_widgets/custome_text_field.dart';
 import '../../common_widgets/professor_cell.dart';
 import '../../controller/store_controller.dart';
-import '../../services/notification_service.dart';
 import '../../theme.dart';
 import 'community_view/first_year.dart';
 import 'community_view/fourth_year.dart';
@@ -31,7 +30,7 @@ class _ExploreViewState extends State<ExploreView> {
   final firebaseMessaging = FirebaseMessaging.instance;
   final searchCont = TextEditingController();
   final controller = Get.put(StoreController());
-  final notiService = NotificationService();
+  
 
   @override
   void initState() {
@@ -126,8 +125,9 @@ class _ExploreViewState extends State<ExploreView> {
                                       "assets/img/woman.png", //this is the professor image
                                   profField: pro[
                                       'specialty'], //this is the field which the professor studes in
-                                  onTap:
-                                      () {} //this will navigate us to the selected professor detail page
+                                  onTap: () {
+                                   
+                                  } //this will navigate us to the selected professor detail page
                                   );
                             });
                       }),
@@ -147,19 +147,7 @@ class _ExploreViewState extends State<ExploreView> {
                 ),
               ),
               SizedBox(height: 30),
-              // controller.allCourse.isEmpty
-              //     ? FadeInDown(
-              //         delay: Duration(milliseconds: 880),
-              //         child: Text(
-              //           "There are no courses to display yet!",
-              //           textAlign: TextAlign.center,
-              //           style: TextStyle(
-              //               color: Colors.black,
-              //               fontWeight: FontWeight.bold,
-              //               fontSize: 17),
-              //         ),
-              //       )
-              //     :
+
               //list of courses
               SizedBox(
                 width: double.infinity,

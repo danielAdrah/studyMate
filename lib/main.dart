@@ -15,6 +15,7 @@ void main() async {
   );
   final notificationService = NotificationService();
   await notificationService.initNotifications();
+  await notificationService.initLocalNotifications();
   runApp(const MyApp());
 }
 
@@ -32,13 +33,4 @@ class MyApp extends StatelessWidget {
 }
 
 
-//  <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
-//         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
-//             <intent-filter>
-//                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
-//                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-//                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-//                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>   
-//             </intent-filter> 
-//         </receiver>
-//         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver" />
+// Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.

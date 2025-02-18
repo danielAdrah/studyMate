@@ -49,6 +49,10 @@ dependencies:
   googleapis_auth: ^1.6.0
   firebase_messaging: ^15.2.2
   flutter_local_notifications: ^18.0.1
+  flutter_timezone: ^4.1.0
+  timezone: ^0.10.0
+  test_api: ^0.7.2
+  intl: ^0.20.2
 
 
 dev_dependencies:

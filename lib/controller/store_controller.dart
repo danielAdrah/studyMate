@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class StoreController extends GetxController {
@@ -10,11 +11,14 @@ class StoreController extends GetxController {
 
   final profrssorCourse = RxList<QueryDocumentSnapshot>.from([]);
   RxList<QueryDocumentSnapshot> allCourse = <QueryDocumentSnapshot>[].obs;
+  RxList<QueryDocumentSnapshot> allNotificiations =
+      <QueryDocumentSnapshot>[].obs;
   RxList<QueryDocumentSnapshot> firstPost = <QueryDocumentSnapshot>[].obs;
   RxList<QueryDocumentSnapshot> secondPost = <QueryDocumentSnapshot>[].obs;
   RxList<QueryDocumentSnapshot> thirdPost = <QueryDocumentSnapshot>[].obs;
   RxList<QueryDocumentSnapshot> fourthPost = <QueryDocumentSnapshot>[].obs;
 
+  RxString min = ''.obs;
   RxString userName = "".obs;
   RxString userFullName = "".obs;
   RxString userMail = "".obs;
@@ -127,6 +131,21 @@ class StoreController extends GetxController {
     }
   }
 
+//=======FETCH ALL THE NOTI
+  Future<void> getAllNoti() async {
+    try {
+      QuerySnapshot data = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('notifications')
+          .get();
+      print('Number of all noti fetched: ${data.docs.length}');
+      allNotificiations.value = data.docs;
+    } catch (e) {
+      print("===========${e.toString()}");
+    }
+  }
+
 //=====GET ALL COURSES
   Stream<List<Map<String, dynamic>>> fetchCoursesStream() {
     return firestore.collection("courses").snapshots().map((snapshot) {
@@ -150,8 +169,8 @@ class StoreController extends GetxController {
   }
 
 //======RESERVE A COURSE
-  Future<void> reserveCourse(
-      String courseName, courseField, professor, date, time, courseID) async {
+  Future<void> reserveCourse(String courseName, courseField, professor, date,
+      time, courseID, context) async {
     try {
       DocumentReference response = await bookedCoursesCollection.add({
         'professor': professor,
@@ -162,6 +181,9 @@ class StoreController extends GetxController {
         'userID': FirebaseAuth.instance.currentUser!.uid,
         'id': courseID,
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("This course is booked")),
+      );
       print("======= done adding");
     } catch (e) {
       print("=======booked ${e.toString()}");
@@ -415,5 +437,36 @@ class StoreController extends GetxController {
         userToken.value = docSnap.get('token');
       }
     }
+  }
+
+// Method to fetch notifications for a user
+  Stream<List<Map<String, dynamic>>> fetchNotifications(String notiID) {
+    return firestore
+        .collection("users")
+        .doc(notiID)
+        .collection('notifications')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final notification = doc.data();
+        return notification;
+      }).toList();
+    });
+  }
+
+  // Method to clear notifications for a user
+  Stream<List<Map<String, dynamic>>> clearNoti() {
+    return firestore
+        .collection("us")
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final post = doc.data();
+
+        return post;
+      }).toList();
+    });
   }
 }

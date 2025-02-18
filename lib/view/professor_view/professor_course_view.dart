@@ -9,6 +9,7 @@ import 'package:studymate/common_widgets/custom_button.dart';
 import '../../common_widgets/custom_app_bar.dart';
 import '../../common_widgets/custome_text_field.dart';
 import '../../controller/store_controller.dart';
+import '../../services/notification_service.dart';
 import '../../theme.dart';
 
 class ProfessorCourseView extends StatefulWidget {
@@ -24,6 +25,7 @@ class _ProfessorCourseViewState extends State<ProfessorCourseView> {
   final courseField = TextEditingController();
   final newCourseName = TextEditingController();
   final newCourseField = TextEditingController();
+  final notiService = NotificationService();
 
   void clearFields() {
     courseName.clear();
@@ -115,6 +117,10 @@ class _ProfessorCourseViewState extends State<ProfessorCourseView> {
                               if (controller.userActivaty.value == true) {
                                 customDialog(context, courseName, courseField,
                                     () {
+                                  notiService.showNotification(
+                                    title: "You have added a course",
+                                    body: "",
+                                  );
                                   controller.addCourse(
                                       courseName.text, courseField.text);
                                   clearFields();

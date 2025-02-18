@@ -7,13 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:studymate/common_widgets/custom_button.dart';
-
+import 'package:studymate/common_widgets/date_time_selector.dart';
 import '../../common_widgets/custom_app_bar.dart';
 import '../../controller/cours_controller.dart';
 import '../../controller/sign_up_controller.dart';
 import '../../controller/store_controller.dart';
 import '../../services/notification_service.dart';
 import '../../theme.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class CourseReservation extends StatefulWidget {
   const CourseReservation(
@@ -32,18 +34,111 @@ class CourseReservation extends StatefulWidget {
 class _CourseReservationState extends State<CourseReservation> {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  GetStorage storage = GetStorage();
+
   final notiService = NotificationService();
   final coursCont = Get.put(CoursController());
   final authController = Get.put(SignUpController());
   final storeController = Get.put(StoreController());
   final courseDate = TextEditingController();
   final courseTime = TextEditingController();
+  final min = TextEditingController();
+  DateTime selectedDate = DateTime.now();
+  TimeOfDay selectedTime = TimeOfDay.now();
+
+  // Future<void> sendScheduleNotification() async {
+  //   // final now = tz.TZDateTime.from(DateTime.now(), tz.local);
+  //   final now = tz.TZDateTime.now(tz.local);
+  //   print('Debug: Current time: ${now.toLocal()}');
+  //   final localDateTime = tz.TZDateTime.from(selectedDate, tz.local);
+  //   print('Debug: Local Date Time: ${localDateTime.toLocal()}');
+  //   print('Debug: Local Hour: ${localDateTime.hour}');
+  //   print('Debug: Local Minute: ${localDateTime.minute}');
+
+  //   // final scheduledDateTime = tz.TZDateTime(
+  //   //   tz.local,
+  //   //   selectedDate.year,
+  //   //   selectedDate.month,
+  //   //   selectedDate.day,
+  //   //   selectedDate.hour,
+  //   //   selectedDate.minute,
+  //   // );
+  //   final scheduledDateTime = tz.TZDateTime.utc(
+  //     localDateTime.year,
+  //     localDateTime.month,
+  //     localDateTime.day,
+  //     localDateTime.hour,
+  //     localDateTime.minute,
+  //   );
+
+  //   print('Debug: Scheduled Date Time: ${scheduledDateTime.toLocal()}');
+  //   print('Debug: Scheduled Hour: ${scheduledDateTime.hour}');
+  //   print('Debug: Scheduled Minute: ${scheduledDateTime.minute}');
+
+  //   print('Debug: Now hour: ${now.hour}');
+  //   print('Debug: Now minute: ${now.minute}');
+  //   // final DateTime scheduledDateTime = DateTime(
+  //   //   selectedDate.year,
+  //   //   selectedDate.month,
+  //   //   selectedDate.day,
+  //   //   selectedDate.hour,
+  //   //   selectedDate.minute,
+  //   // );
+
+  //   // final scheduledDateTime = tz.TZDateTime.from(
+  //   //   DateTime(selectedDate.year, selectedDate.month, selectedDate.day),
+  //   //   tz.local,
+  //   // );
+
+  //   if (scheduledDateTime.isBefore(now)) {
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('Please select future date and time.')),
+  //       );
+  //     }
+  //     return;
+  //   }
+  //   print('Debug: Proceeding with notification scheduling');
+
+  //   final tzDateTime = tz.TZDateTime(
+  //     tz.local,
+  //     scheduledDateTime.year,
+  //     scheduledDateTime.month,
+  //     scheduledDateTime.day,
+  //     scheduledDateTime.hour,
+  //     scheduledDateTime.minute,
+  //   );
+  //   // final tzDateTime = tz.TZDateTime(
+  //   //     tz.local,
+  //   //     scheduledDateTime.year,
+  //   //     scheduledDateTime.month,
+  //   //     scheduledDateTime.day,
+  //   //     scheduledDateTime.hour,
+  //   //     scheduledDateTime.minute);
+
+  //   await notiService.scheduleNotification(
+  //     title: "Course Reminder",
+  //     body: "You have a course now",
+  //     scheduledDate: scheduledDateTime,
+  //   );
+  //   if (mounted) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('${scheduledDateTime.toString()}')),
+  //     );
+  //   }
+  // }
+
+  void updateDateTime(DateTime date, TimeOfDay time) {
+    setState(() {
+      selectedDate = date;
+      selectedTime = time;
+    });
+  }
+
   void clearFields() {
     courseDate.clear();
     courseTime.clear();
+    min.clear();
   }
-  // final String token =  notiService.getDeviceToken();
 
   @override
   void initState() {
@@ -191,7 +286,7 @@ class _CourseReservationState extends State<CourseReservation> {
                       SizedBox(width: 60),
                       //====to select course date
                       Expanded(
-                        child: DateTextField(
+                        child: DateTextField2(
                           controller: courseDate,
                           onTap: showDate,
                           width: 200,
@@ -206,7 +301,7 @@ class _CourseReservationState extends State<CourseReservation> {
                   child: Row(
                     children: [
                       Text(
-                        "Choose Time",
+                        "Enter Time",
                         style: TextStyle(
                           color: TColor.black,
                           fontSize: 16,
@@ -218,7 +313,15 @@ class _CourseReservationState extends State<CourseReservation> {
                       Expanded(
                         child: DateTextField(
                           controller: courseTime,
-                          onTap: showTimePicke,
+                          onTap: () {},
+                          width: 200,
+                        ),
+                      ),
+                      SizedBox(width: 3),
+                      Expanded(
+                        child: DateTextField(
+                          controller: min,
+                          onTap: () {},
                           width: 200,
                         ),
                       ),
@@ -231,6 +334,9 @@ class _CourseReservationState extends State<CourseReservation> {
                   child: Center(
                     child: CustomButton(
                       title: "Book",
+                      // onTap: () {
+                      //   sendScheduleNotification();
+                      // },
                       onTap: () {
                         //first we check if the user has select all the required data
                         //if he doesn't we will display for him a warring dialog
@@ -243,16 +349,26 @@ class _CourseReservationState extends State<CourseReservation> {
                             print("error");
                             customDialog(context);
                           } else {
+                            notiService.scheduleNotification(
+                              title: "Course Reminder",
+                              body: "You Have A Course Now",
+                              hour: int.parse(courseTime.text),
+                              minute: int.parse(min.text),
+                            );
                             storeController.reserveCourse(
                               widget.courseName,
                               widget.courseField,
                               coursCont.professorName.value,
                               courseDate.text,
-                              courseTime.text,
+                              '${courseTime.text}:${min.text}',
                               widget.courseID,
+                              context,
                             );
-                            notiService.sendNotifications("body", "title",
-                                storeController.userToken.value);
+                            notiService.showNotification(
+                                title: "Course Bokking",
+                                body:
+                                    "We will have a course on ${courseDate.text}, ${courseTime.text}:${min.text}");
+
                             print("done");
                             clearFields();
                           }
@@ -356,13 +472,15 @@ class _CourseReservationState extends State<CourseReservation> {
   }
 
   //method to select a time
+
   Future<void> showTimePicke() async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: TimeOfDay.fromDateTime(DateTime.now()),
     );
     if (pickedTime != null) {
       courseTime.text = pickedTime.format(context).toString();
+      storeController.min.value = '${pickedTime.hour}:${pickedTime.minute}';
       print(courseTime.text);
     }
   }
@@ -445,6 +563,47 @@ class CourseCell2 extends StatelessWidget {
 //===========textField to display course date============
 class DateTextField extends StatelessWidget {
   DateTextField(
+      {super.key,
+      required this.onTap,
+      required this.controller,
+      required this.width});
+  void Function()? onTap;
+  TextEditingController controller;
+  final double width;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(left: 2),
+      height: 50,
+      width: width,
+      decoration: BoxDecoration(
+        color: TColor.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Center(
+        child: TextField(
+          onTap: onTap,
+          // readOnly: true,
+          style:
+              TextStyle(color: TColor.black, decoration: TextDecoration.none),
+          controller: controller,
+          obscureText: false,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(left: 10),
+            focusedBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            enabledBorder: InputBorder.none,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+//=====
+class DateTextField2 extends StatelessWidget {
+  DateTextField2(
       {super.key,
       required this.onTap,
       required this.controller,
