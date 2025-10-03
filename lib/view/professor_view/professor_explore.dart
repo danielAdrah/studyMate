@@ -43,10 +43,7 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 20),
-                CustomAppBar(
-                  name: "Ali",
-                  avatar: "assets/img/avatar.png",
-                ),
+                CustomAppBar(),
                 SizedBox(height: 20),
                 FadeInDown(
                     delay: Duration(milliseconds: 600),
@@ -209,6 +206,8 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
                                     return CourseCell(
                                       courseName: course['courseName'],
                                       courseField: course['courseField'],
+                                      coursePrice: "200",
+                                      courseTime: "3h",
                                       onTap: () {},
                                     );
                                   });
@@ -222,6 +221,8 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
                                     return CourseCell(
                                       courseName: course['courseName'],
                                       courseField: course['courseField'],
+                                      courseTime: "3h",
+                                      coursePrice: "200",
                                       onTap: () {},
                                     );
                                   });

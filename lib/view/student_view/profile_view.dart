@@ -12,6 +12,7 @@ import '../../common_widgets/custome_text_field.dart';
 import '../../controller/cours_controller.dart';
 import '../../theme.dart';
 import '../auth_view/log_in.dart';
+import 'notification_view.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -65,36 +66,89 @@ class _ProfileViewState extends State<ProfileView> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: 40),
-                Stack(
+                Column(
                   children: [
-                    Container(
-                      padding: EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: TColor.primary,
-                      ),
-                      child: CircleAvatar(
-                          radius: 70,
-                          backgroundImage: controller.imagePath.value == null
-                              ? AssetImage("assets/img/user.png")
-                              : FileImage(File(controller.imagePath.value!))
-                                  as ImageProvider<Object>?),
-                    ),
-                    Positioned(
-                      right: 10,
-                      bottom: 1,
-                      child: InkWell(
-                        onTap: () {
-                          //choose a pic
-                          controller.uploadImage();
-                        },
-                        child: CircleAvatar(
-                          backgroundColor: TColor.white,
-                          radius: 20,
-                          child: Icon(
-                            Icons.camera_alt,
+                    Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        Container(
+                          width: 140,
+                          height: 140,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [TColor.primary, TColor.secondary],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: TColor.primary.withOpacity(0.3),
+                                blurRadius: 15,
+                                offset: Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(4),
+                            child: CircleAvatar(
+                              radius: 66,
+                              backgroundImage: controller.imagePath.value ==
+                                      null
+                                  ? AssetImage("assets/img/user.png")
+                                  : FileImage(File(controller.imagePath.value!))
+                                      as ImageProvider<Object>?,
+                              backgroundColor: TColor.surface,
+                            ),
                           ),
                         ),
+                        GestureDetector(
+                          onTap: () {
+                            //choose a pic
+                            controller.uploadImage();
+                          },
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: TColor.primary,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: TColor.primary.withOpacity(0.4),
+                                  blurRadius: 8,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      storeController.userFullName.value.isEmpty
+                          ? "User Name"
+                          : storeController.userFullName.value,
+                      style: TextStyle(
+                        color: TColor.onSurface,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      storeController.userSpecialty.value.isEmpty
+                          ? "Student"
+                          : storeController.userSpecialty.value,
+                      style: TextStyle(
+                        color: TColor.onSurfaceVariant,
+                        fontSize: 14,
                       ),
                     ),
                   ],
@@ -105,163 +159,159 @@ class _ProfileViewState extends State<ProfileView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Text(
-                          "Personal Information",
-                          style: TextStyle(
-                              color: TColor.primary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Personal Information",
+                            style: TextStyle(
+                              color: TColor.onSurface,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 36,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                customDialog(context, newName, newSpecailty,
+                                    () {
+                                  updateUserInfo(auth.currentUser!.uid,
+                                      newName.text, newSpecailty.text);
+                                  Get.back();
+                                  clearField();
+                                });
+                              },
+                              icon: Icon(
+                                Icons.edit,
+                                size: 16,
+                                color: TColor.primary,
+                              ),
+                              label: Text(
+                                "Edit",
+                                style: TextStyle(
+                                  color: TColor.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: TColor.background,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  side: BorderSide(
+                                    color: TColor.primary.withOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                elevation: 0,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+                      SizedBox(height: 16),
                       Container(
                         width: double.infinity,
-                        height: height / 2.1,
                         decoration: BoxDecoration(
+                          color: TColor.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                              color: TColor.primary.withOpacity(0.2)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(1, 1.5),
-                              blurRadius: 0.2,
-                              blurStyle: BlurStyle.outer,
-                            )
+                              color: TColor.primary.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
                           ],
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
                         ),
                         child: Column(
                           children: [
-                            SizedBox(height: 40),
                             InfoTile(
                               onTap: () {},
-                              title: "Name :",
+                              title: "Name",
                               child: Text(storeController.userFullName.value,
                                   style: TextStyle(
-                                      color: const Color.fromARGB(115, 0, 0, 0),
+                                      color: TColor.onSurfaceVariant,
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w400)),
+                                      fontWeight: FontWeight.w500)),
                               icon: Icons.person,
+                              isLast: false,
                             ),
-                            SizedBox(height: 35),
                             InfoTile(
-                              title: "E-mail :",
+                              title: "E-mail",
                               onTap: () {},
                               child: Text(storeController.userMail.value,
                                   style: TextStyle(
-                                      color: const Color.fromARGB(115, 0, 0, 0),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400)),
+                                      color: TColor.onSurfaceVariant,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500)),
                               icon: Icons.mail,
+                              isLast: false,
                             ),
-                            SizedBox(height: 35),
                             InfoTile(
-                              title: "Specialty :",
+                              title: "Specialty",
                               onTap: () {},
                               child: Text(storeController.userSpecialty.value,
                                   style: TextStyle(
-                                      color: const Color.fromARGB(115, 0, 0, 0),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400)),
+                                      color: TColor.onSurfaceVariant,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500)),
                               icon: Icons.add_chart_outlined,
+                              isLast: false,
                             ),
-                            SizedBox(height: 35),
                             InfoTile(
-                              title: "Password :",
+                              title: "Password",
                               onTap: () {},
-                              child: InkWell(
-                                  onTap: () async {
-                                    try {
-                                      //this for sending an link to the email that the user forget its password
-                                      await FirebaseAuth.instance
-                                          .sendPasswordResetEmail(
-                                              email: storeController
-                                                  .userMail.value);
-
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  "A link has been send to your email")));
-                                    } catch (e) {
-                                      print(e.toString());
-                                    }
-                                  },
-                                  child: Text("Change Password")),
+                              child: Text("Change Password",
+                                  style: TextStyle(
+                                      color: TColor.primary,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500)),
                               icon: Icons.security,
+                              isLast: true,
                             ),
-                            SizedBox(height: 30),
-                            // Padding(
-                            //   padding:
-                            //       const EdgeInsets.symmetric(horizontal: 130),
-                            //   child: InkWell(
+
+                            // CommunityBtn(
+                            //     title: "Update",
                             //     onTap: () {
-                            //       customDialog(
-                            //           context, newName, newMail, newPass);
-                            //     },
-                            //     child: Container(
-                            //       padding: EdgeInsets.symmetric(
-                            //           vertical: 10, horizontal: 15),
-                            //       decoration: BoxDecoration(
-                            //         color: TColor.primary,
-                            //         borderRadius: BorderRadius.circular(25),
-                            //       ),
-                            //       child: Row(
-                            //         mainAxisAlignment: MainAxisAlignment.center,
-                            //         children: [
-                            //           Text(
-                            //             "Update",
-                            //             style: TextStyle(
-                            //                 color: TColor.white,
-                            //                 fontWeight: FontWeight.w600),
-                            //           ),
-                            //         ],
-                            //       ),
-                            //     ),
-                            //   ),
-                            // )
-                            CommunityBtn(
-                                title: "Update",
-                                onTap: () {
-                                  customDialog(context, newName, newSpecailty,
-                                      () {
-                                    updateUserInfo(auth.currentUser!.uid,
-                                        newName.text, newSpecailty.text);
-                                    Get.back();
-                                    clearField();
-                                  });
-                                }),
+
+                            //     }),
                           ],
                         ),
                       ),
                       SizedBox(height: 35),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        padding: const EdgeInsets.only(top: 20, bottom: 12),
                         child: Text(
                           "Other Options",
                           style: TextStyle(
-                              color: TColor.primary,
-                              fontSize: 14,
+                              color: TColor.onSurface,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600),
                         ),
                       ),
                       Container(
                         width: double.infinity,
-                        height: 110,
                         decoration: BoxDecoration(
+                          color: TColor.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                              color: TColor.primary.withOpacity(0.2)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(1, 1.5),
-                              blurRadius: 0.2,
-                              blurStyle: BlurStyle.outer,
-                            )
+                              color: TColor.primary.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
                           ],
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
                         ),
                         child: Column(
                           children: [
-                            SizedBox(height: 40),
                             InfoTile(
                               onTapGen: () async {
                                 //this is for signout
@@ -270,12 +320,19 @@ class _ProfileViewState extends State<ProfileView> {
                               },
                               title: "Log Out",
                               onTap: () {},
-                              child: Icon(
-                                Icons.arrow_forward_ios,
-                                size: 20,
-                                color: Colors.white,
-                              ),
+                              child: SizedBox(),
                               icon: Icons.logout,
+                              isLast: false,
+                            ),
+                            InfoTile(
+                              onTapGen: () async {
+                                Get.to(NotificationView());
+                              },
+                              title: "Notifications",
+                              onTap: () {},
+                              child: SizedBox(),
+                              icon: Icons.notifications,
+                              isLast: true,
                             ),
                           ],
                         ),
@@ -293,7 +350,6 @@ class _ProfileViewState extends State<ProfileView> {
   }
 }
 
-//======in this widget we will display the personal info of the user========
 class InfoTile extends StatelessWidget {
   InfoTile({
     super.key,
@@ -302,45 +358,98 @@ class InfoTile extends StatelessWidget {
     required this.child,
     required this.onTap,
     this.onTapGen,
+    this.isLast = false,
   });
+
   final String title;
   final IconData icon;
   final Widget child;
-  void Function()? onTapGen;
-
-  void Function()? onTap;
+  final VoidCallback? onTapGen;
+  final VoidCallback? onTap;
+  final bool isLast;
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-
-    return InkWell(
-      onTap: onTapGen,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+    return Container(
+      decoration: BoxDecoration(
+        border: !isLast
+            ? Border(bottom: BorderSide(color: TColor.primary.withOpacity(0.2)))
+            : null,
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            TColor.primary.withOpacity(0.05),
+            Colors.transparent,
+          ],
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTapGen,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Row(
               children: [
-                Icon(icon, color: TColor.primary, size: 30),
-                SizedBox(width: 8),
-                Text(title,
-                    style: TextStyle(
-                        color: TColor.primary,
-                        fontSize: 19,
-                        fontWeight: FontWeight.w700)),
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: TColor.primary.withOpacity(0.1),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: TColor.primary,
+                    size: 20,
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          color: TColor.primary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      if (onTap != null)
+                        InkWell(
+                          onTap: onTap,
+                          child: DefaultTextStyle(
+                            style: TextStyle(
+                              color: TColor.onSurfaceVariant,
+                              fontSize: 14,
+                            ),
+                            child: child,
+                          ),
+                        )
+                      else
+                        DefaultTextStyle(
+                          style: TextStyle(
+                            color: TColor.onSurfaceVariant,
+                            fontSize: 14,
+                          ),
+                          child: child,
+                        ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: TColor.onSurfaceVariant,
+                ),
               ],
             ),
-            SizedBox(width: width / 9),
-            Expanded(
-              child: InkWell(
-                onTap: onTap,
-                child: child,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

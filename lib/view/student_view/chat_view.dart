@@ -36,8 +36,7 @@ class _ChatViewState extends State<ChatView> {
               children: [
                 SizedBox(height: 20),
                 CustomAppBar(
-                  name: "Ali",
-                  avatar: "assets/img/avatar.png",
+                
                 ),
                 SizedBox(height: 25),
                 SizedBox(

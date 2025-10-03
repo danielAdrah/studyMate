@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable, avoid_print
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,6 +29,7 @@ class _FirstYearState extends State<FirstYear> {
   @override
   void initState() {
     controller.getFirstPost();
+    controller.getCurrentUserName();
     super.initState();
   }
 
@@ -39,62 +40,64 @@ class _FirstYearState extends State<FirstYear> {
       backgroundColor: TColor.background,
       body: SafeArea(
           child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomTextForm(
-                        hinttext: "Enter your post",
-                        mycontroller: postTextController,
-                        secure: false),
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        if (postTextController.text.isNotEmpty) {
-                          controller.addPost(
-                              postTextController.text, 'firstYear');
-                        }
+        child: Obx(
+          () => Column(
+            children: [
+              SizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextForm(
+                          hinttext: "Enter your post",
+                          mycontroller: postTextController,
+                          secure: false),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          if (postTextController.text.isNotEmpty) {
+                            controller.addPost(postTextController.text,
+                                'firstYear', controller.userName.value);
+                          }
 
-                        postTextController.clear();
-                      },
-                      icon: Icon(
-                        Icons.arrow_circle_up_rounded,
-                        color: TColor.primary,
-                        size: 40,
-                      ))
-                ],
-              ),
-         
-            ),
-       
-            SizedBox(
-              width: double.infinity,
-              child: Obx(
-                () => ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: controller.firstPost.length,
-                  itemBuilder: (context, index) {
-                    var post = controller.firstPost[index];
-                    return PostTile(
-                        postDate: formatDate(post['timestamp']),
-                        postID: post.id,
-                        user: post['user'],
-                        content: post['content'],
-                        commentOnPressed: () {
-                          Get.to(CommentScreen(
-                            postId: post.id,
-                          ));
-                        });
-                  },
+                          postTextController.clear();
+                        },
+                        icon: Icon(
+                          Icons.arrow_circle_up_rounded,
+                          color: TColor.primary,
+                          size: 40,
+                        ))
+                  ],
                 ),
               ),
-            ),
-          ],
+              controller.firstPost.isEmpty
+                  ? Text("There are no posts yet!",
+                      style: TextStyle(
+                          color: TColor.black, fontWeight: FontWeight.bold))
+                  : SizedBox(
+                      width: double.infinity,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: controller.firstPost.length,
+                        itemBuilder: (context, index) {
+                          var post = controller.firstPost[index];
+                          return PostTile(
+                              postDate: formatDate(post['timestamp']),
+                              postID: post.id,
+                              user: post['user'],
+                              content: post['content'],
+                              commentOnPressed: () {
+                                Get.to(CommentScreen(
+                                  postId: post.id,
+                                ));
+                              });
+                        },
+                      ),
+                    ),
+            ],
+          ),
         ),
       )),
     );

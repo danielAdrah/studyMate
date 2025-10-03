@@ -11,6 +11,7 @@ import 'package:studymate/controller/store_controller.dart';
 import '../../common_widgets/custome_text_field.dart';
 import '../../controller/cours_controller.dart';
 import '../../theme.dart';
+import '../auth_view/auth_gate.dart';
 import '../auth_view/log_in.dart';
 
 class AdminProfile extends StatefulWidget {
@@ -44,6 +45,38 @@ class _AdminProfileState extends State<AdminProfile> {
     } catch (e) {
       print(e.toString());
     }
+  }
+
+  void deleteAccount(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('Delete Account'),
+              content: Text('Are you sure you want to delete your account?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    try {
+                      await storeController.deleteAccount();
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Account deleted successfully')));
+                      // Navigate to login screen or home screen after deletion
+                      Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) => AuthGate()));
+                    } catch (e) {
+                      print(e);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Failed to delete account: $e')));
+                    }
+                  },
+                  child: Text('Delete'),
+                ),
+              ],
+            ));
   }
 
   @override
@@ -104,19 +137,40 @@ class _AdminProfileState extends State<AdminProfile> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Text(
-                          "Personal Information",
-                          style: TextStyle(
-                              color: TColor.primary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Personal Information",
+                            style: TextStyle(
+                                color: TColor.primary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              customDialog(context, newName, () {
+                                updateUserInfo(
+                                  auth.currentUser!.uid,
+                                  newName.text,
+                                );
+                                Get.back();
+                                clearField();
+                              });
+                            },
+                            child: Text(
+                              "Update",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       Container(
                         width: double.infinity,
-                        height: height / 2.5,
+                        height: height / 2.6,
                         decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(
@@ -178,18 +232,12 @@ class _AdminProfileState extends State<AdminProfile> {
                               icon: Icons.security,
                             ),
                             SizedBox(height: 30),
-                            CommunityBtn(
-                                title: "Update",
-                                onTap: () {
-                                  customDialog(context, newName, () {
-                                    updateUserInfo(
-                                      auth.currentUser!.uid,
-                                      newName.text,
-                                    );
-                                    Get.back();
-                                    clearField();
-                                  });
-                                }),
+                            // CommunityBtn(
+                            //     title: "Update",
+                            //     onTap: () {
+
+                            //       });
+                            //     }),
                           ],
                         ),
                       ),
@@ -206,7 +254,7 @@ class _AdminProfileState extends State<AdminProfile> {
                       ),
                       Container(
                         width: double.infinity,
-                        height: 110,
+                        height: height / 8,
                         decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(

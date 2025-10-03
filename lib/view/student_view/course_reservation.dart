@@ -5,17 +5,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:studymate/common_widgets/custom_button.dart';
-import 'package:studymate/common_widgets/date_time_selector.dart';
 import '../../common_widgets/custom_app_bar.dart';
 import '../../controller/cours_controller.dart';
 import '../../controller/sign_up_controller.dart';
 import '../../controller/store_controller.dart';
 import '../../services/notification_service.dart';
 import '../../theme.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz;
 
 class CourseReservation extends StatefulWidget {
   const CourseReservation(
@@ -31,7 +28,8 @@ class CourseReservation extends StatefulWidget {
   State<CourseReservation> createState() => _CourseReservationState();
 }
 
-class _CourseReservationState extends State<CourseReservation> {
+class _CourseReservationState extends State<CourseReservation>
+    with TickerProviderStateMixin {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -44,88 +42,6 @@ class _CourseReservationState extends State<CourseReservation> {
   final min = TextEditingController();
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
-
-  // Future<void> sendScheduleNotification() async {
-  //   // final now = tz.TZDateTime.from(DateTime.now(), tz.local);
-  //   final now = tz.TZDateTime.now(tz.local);
-  //   print('Debug: Current time: ${now.toLocal()}');
-  //   final localDateTime = tz.TZDateTime.from(selectedDate, tz.local);
-  //   print('Debug: Local Date Time: ${localDateTime.toLocal()}');
-  //   print('Debug: Local Hour: ${localDateTime.hour}');
-  //   print('Debug: Local Minute: ${localDateTime.minute}');
-
-  //   // final scheduledDateTime = tz.TZDateTime(
-  //   //   tz.local,
-  //   //   selectedDate.year,
-  //   //   selectedDate.month,
-  //   //   selectedDate.day,
-  //   //   selectedDate.hour,
-  //   //   selectedDate.minute,
-  //   // );
-  //   final scheduledDateTime = tz.TZDateTime.utc(
-  //     localDateTime.year,
-  //     localDateTime.month,
-  //     localDateTime.day,
-  //     localDateTime.hour,
-  //     localDateTime.minute,
-  //   );
-
-  //   print('Debug: Scheduled Date Time: ${scheduledDateTime.toLocal()}');
-  //   print('Debug: Scheduled Hour: ${scheduledDateTime.hour}');
-  //   print('Debug: Scheduled Minute: ${scheduledDateTime.minute}');
-
-  //   print('Debug: Now hour: ${now.hour}');
-  //   print('Debug: Now minute: ${now.minute}');
-  //   // final DateTime scheduledDateTime = DateTime(
-  //   //   selectedDate.year,
-  //   //   selectedDate.month,
-  //   //   selectedDate.day,
-  //   //   selectedDate.hour,
-  //   //   selectedDate.minute,
-  //   // );
-
-  //   // final scheduledDateTime = tz.TZDateTime.from(
-  //   //   DateTime(selectedDate.year, selectedDate.month, selectedDate.day),
-  //   //   tz.local,
-  //   // );
-
-  //   if (scheduledDateTime.isBefore(now)) {
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text('Please select future date and time.')),
-  //       );
-  //     }
-  //     return;
-  //   }
-  //   print('Debug: Proceeding with notification scheduling');
-
-  //   final tzDateTime = tz.TZDateTime(
-  //     tz.local,
-  //     scheduledDateTime.year,
-  //     scheduledDateTime.month,
-  //     scheduledDateTime.day,
-  //     scheduledDateTime.hour,
-  //     scheduledDateTime.minute,
-  //   );
-  //   // final tzDateTime = tz.TZDateTime(
-  //   //     tz.local,
-  //   //     scheduledDateTime.year,
-  //   //     scheduledDateTime.month,
-  //   //     scheduledDateTime.day,
-  //   //     scheduledDateTime.hour,
-  //   //     scheduledDateTime.minute);
-
-  //   await notiService.scheduleNotification(
-  //     title: "Course Reminder",
-  //     body: "You have a course now",
-  //     scheduledDate: scheduledDateTime,
-  //   );
-  //   if (mounted) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('${scheduledDateTime.toString()}')),
-  //     );
-  //   }
-  // }
 
   void updateDateTime(DateTime date, TimeOfDay time) {
     setState(() {
@@ -141,247 +57,731 @@ class _CourseReservationState extends State<CourseReservation> {
   }
 
   @override
-  void initState() {
-    storeController.fetchUserData();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: TColor.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 30),
-                CustomAppBar(
-                  name: "Ali",
-                  avatar: "assets/img/avatar.png",
-                ),
-                SizedBox(height: 80),
-                FadeInDown(
-                  delay: Duration(milliseconds: 600),
-                  child: Center(
-                      child: CourseCell2(
-                    courseName: widget.courseName,
-                    courseField: widget.courseField,
-                    onTap: () {},
-                  )),
-                ),
-                SizedBox(height: 35),
-                FadeInDown(
-                  delay: Duration(milliseconds: 800),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Choose Professor",
-                        style: TextStyle(
-                          color: TColor.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      //this a dropDown list to choose a professor
-                      Expanded(
-                        child: Container(
+      body: CustomScrollView(
+        slivers: [
+          // Modern App Bar
+          SliverAppBar(
+            expandedHeight: 100,
+            floating: true,
+            pinned: true,
+            backgroundColor: TColor.background,
+            elevation: 0,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 30),
+                    FadeInDown(
+                      delay: Duration(milliseconds: 300),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                                color: TColor.white,
-                                borderRadius: BorderRadius.circular(15)),
-                            // width: 100,
-                            child: StreamBuilder(
-                                stream: storeController.getProfessorStream(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasError) {
-                                    return Text(snapshot.error.toString());
-                                  }
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return Center(
-                                        child: CircularProgressIndicator(
-                                            color: TColor.primary));
-                                  }
-                                  if (!snapshot.hasData ||
-                                      snapshot.data!.isEmpty) {
-                                    return Center(
-                                      child: Text(
-                                        "There are no profrssors yet",
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    );
-                                  }
-                                  return DropdownButton<String>(
-                                    hint: Obx(() => coursCont
-                                            .professorName.value.isEmpty
-                                        ? Text(
-                                            " ",
-                                            style: TextStyle(
-                                                color: TColor.black
-                                                    .withOpacity(0.5)),
-                                          )
-                                        : Text(coursCont.professorName.value,
-                                            style: TextStyle(
-                                                color: TColor.black))),
-                                    items: (snapshot.data
-                                            as List<Map<String, dynamic>>)
-                                        .map((Map<String, dynamic> entry) {
-                                      return DropdownMenuItem<String>(
-                                        value: entry[
-                                            'name'], // Assuming 'name' is the field containing the professor's name
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              entry['name'],
-                                              style: TextStyle(
-                                                color: TColor.black
-                                                    .withOpacity(0.5),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }).toList(),
+                              gradient: LinearGradient(
+                                colors: [TColor.primary, TColor.secondary],
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: TColor.primary.withOpacity(0.3),
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.book_online_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Book Course",
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: TColor.black,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  "Select your preferred details",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: TColor.black.withOpacity(0.6),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ),
+          ),
 
-                                    iconSize: 30,
-                                    icon: Icon(Icons.keyboard_arrow_down),
-                                    isExpanded: true,
+          // Course Selection Section
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  SizedBox(height: 20),
+                  FadeInDown(
+                    delay: Duration(milliseconds: 500),
+                    child: _buildCoursePreview(),
+                  ),
+                  SizedBox(height: 40),
+                ],
+              ),
+            ),
+          ),
 
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 12),
-                                    underline: Text(
-                                      "",
-                                      style: TextStyle(color: TColor.white),
-                                    ),
-                                    onChanged: (String? val) {
-                                      if (val != null) {
-                                        coursCont.professorName.value = val;
-                                        print(coursCont.professorName.value);
-                                      }
-                                    }, //o Implement your logic here when a selection changes
-                                  );
-                                })),
-                      ),
-                    ],
+          // Booking Form
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  FadeInDown(
+                    delay: Duration(milliseconds: 700),
+                    child: _buildProfessorSelection(),
                   ),
-                ),
-                SizedBox(height: 30),
-                FadeInDown(
-                  delay: Duration(milliseconds: 900),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Choose Date",
-                        style: TextStyle(
-                          color: TColor.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(width: 60),
-                      //====to select course date
-                      Expanded(
-                        child: DateTextField2(
-                          controller: courseDate,
-                          onTap: showDate,
-                          width: 200,
-                        ),
-                      ),
-                    ],
+                  SizedBox(height: 24),
+                  FadeInDown(
+                    delay: Duration(milliseconds: 800),
+                    child: _buildDateSelection(),
                   ),
-                ),
-                SizedBox(height: 30),
-                FadeInDown(
-                  delay: Duration(milliseconds: 1000),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Enter Time",
-                        style: TextStyle(
-                          color: TColor.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(width: 60),
-                      //====to select course time
-                      Expanded(
-                        child: DateTextField(
-                          controller: courseTime,
-                          onTap: () {},
-                          width: 200,
-                        ),
-                      ),
-                      SizedBox(width: 3),
-                      Expanded(
-                        child: DateTextField(
-                          controller: min,
-                          onTap: () {},
-                          width: 200,
-                        ),
-                      ),
-                    ],
+                  SizedBox(height: 24),
+                  FadeInDown(
+                    delay: Duration(milliseconds: 900),
+                    child: _buildTimeSelection(),
                   ),
-                ),
-                SizedBox(height: 50),
-                FadeInDown(
-                  delay: Duration(milliseconds: 1100),
+                  SizedBox(height: 50),
+                  FadeInUp(
+                    delay: Duration(milliseconds: 1000),
+                    child: _buildBookingButton(),
+                  ),
+                  SizedBox(height: 30),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Enhanced Course Preview
+  Widget _buildCoursePreview() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            TColor.primary.withOpacity(0.1),
+            TColor.secondary.withOpacity(0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: TColor.primary.withOpacity(0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: TColor.primary.withOpacity(0.1),
+            blurRadius: 15,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [TColor.primary, TColor.secondary],
+                    ),
+                  ),
                   child: Center(
-                    child: CustomButton(
-                      title: "Book",
-                      // onTap: () {
-                      //   sendScheduleNotification();
-                      // },
-                      onTap: () {
-                        //first we check if the user has select all the required data
-                        //if he doesn't we will display for him a warring dialog
-                        //if he selects everything we will proceed the booking method
-
-                        if (storeController.userActivaty.value == true) {
-                          if (courseDate.text.isEmpty ||
-                              courseTime.text.isEmpty ||
-                              coursCont.professorName.value.isEmpty) {
-                            print("error");
-                            customDialog(context);
-                          } else {
-                            notiService.scheduleNotification(
-                              title: "Course Reminder",
-                              body: "You Have A Course Now",
-                              hour: int.parse(courseTime.text),
-                              minute: int.parse(min.text),
-                            );
-                            storeController.reserveCourse(
-                              widget.courseName,
-                              widget.courseField,
-                              coursCont.professorName.value,
-                              courseDate.text,
-                              '${courseTime.text}:${min.text}',
-                              widget.courseID,
-                              context,
-                            );
-                            notiService.showNotification(
-                                title: "Course Bokking",
-                                body:
-                                    "We will have a course on ${courseDate.text}, ${courseTime.text}:${min.text}");
-
-                            print("done");
-                            clearFields();
-                          }
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Your account is inActive")),
-                          );
-                        }
-                      },
+                    child: Image.asset(
+                      "assets/img/online-course.png",
+                      width: 40,
+                      height: 40,
+                      color: Colors.white,
                     ),
                   ),
                 ),
+                SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.courseName,
+                        style: TextStyle(
+                          color: TColor.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: TColor.accent.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: TColor.accent.withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          widget.courseField,
+                          style: TextStyle(
+                            color: TColor.accent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
+            ),
+            SizedBox(height: 16),
+            LinearProgressIndicator(
+              value: 0.68,
+              backgroundColor: TColor.primary.withOpacity(0.1),
+              valueColor: AlwaysStoppedAnimation(TColor.primary),
+              minHeight: 6,
+              borderRadius: BorderRadius.circular(3),
+            ),
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Course Progress",
+                  style: TextStyle(
+                    color: TColor.black.withOpacity(0.6),
+                    fontSize: 12,
+                  ),
+                ),
+                Text(
+                  "68% Complete",
+                  style: TextStyle(
+                    color: TColor.primary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String? selectedProfessor;
+
+  // Professor Selection Section
+  Widget _buildProfessorSelection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: TColor.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: TColor.primary.withOpacity(0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: TColor.primary.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Select Professor",
+              style: TextStyle(
+                color: TColor.onSurface,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 16),
+            StreamBuilder<List<Map<String, dynamic>>>(
+              stream: storeController.getProfessorStream(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Text('Error loading professors');
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Text('No professors available');
+                }
+
+                List<Map<String, dynamic>> professors = snapshot.data!;
+
+                return DropdownButtonFormField<String>(
+                  value: selectedProfessor,
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                    hintText: "Choose a professor",
+                    hintStyle: TextStyle(color: TColor.onSurfaceVariant),
+                    filled: true,
+                    fillColor: TColor.background,
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  items: professors.map<DropdownMenuItem<String>>((professor) {
+                    return DropdownMenuItem<String>(
+                      value: professor['name'] as String,
+                      child: Text(
+                        professor['name'] as String,
+                        style: TextStyle(color: TColor.onSurface),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedProfessor = value;
+                    });
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Date Selection Section
+  Widget _buildDateSelection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: TColor.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: TColor.primary.withOpacity(0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: TColor.primary.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Select Date",
+              style: TextStyle(
+                color: TColor.onSurface,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 16),
+            GestureDetector(
+              onTap: () async {
+                DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: selectedDate,
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2030),
+                  builder: (context, child) {
+                    return Theme(
+                      data: ThemeData().copyWith(
+                        colorScheme: ColorScheme.light(
+                          primary: TColor.primary,
+                          onPrimary: Colors.white,
+                          onSurface: TColor.onSurface,
+                        ),
+                        textButtonTheme: TextButtonThemeData(
+                          style: TextButton.styleFrom(
+                            foregroundColor: TColor.primary,
+                          ),
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
+                );
+                if (picked != null) {
+                  setState(() {
+                    selectedDate = picked;
+                  });
+                }
+              },
+              child: Container(
+                height: 55,
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: TColor.background,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      color: TColor.primary,
+                      size: 20,
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                        style: TextStyle(
+                          color: selectedDate == DateTime.now()
+                              ? TColor.onSurfaceVariant
+                              : TColor.onSurface,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_drop_down,
+                      color: TColor.onSurfaceVariant,
+                      size: 24,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Time Selection Section
+  Widget _buildTimeSelection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: TColor.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: TColor.primary.withOpacity(0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: TColor.primary.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Select Time",
+              style: TextStyle(
+                color: TColor.onSurface,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 16),
+            GestureDetector(
+              onTap: () async {
+                TimeOfDay? pickedTime = await showTimePicker(
+                  context: context,
+                  initialTime: selectedTime,
+                  builder: (context, child) {
+                    return Theme(
+                      data: ThemeData().copyWith(
+                        colorScheme: ColorScheme.light(
+                          primary: TColor.primary,
+                          onPrimary: Colors.white,
+                          onSurface: TColor.onSurface,
+                        ),
+                        textButtonTheme: TextButtonThemeData(
+                          style: TextButton.styleFrom(
+                            foregroundColor: TColor.primary,
+                          ),
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
+                );
+                if (pickedTime != null) {
+                  setState(() {
+                    selectedTime = pickedTime;
+                  });
+                }
+              },
+              child: Container(
+                height: 55,
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: TColor.background,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.access_time,
+                      color: TColor.primary,
+                      size: 20,
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        selectedTime.format(context),
+                        style: TextStyle(
+                          color: TColor.onSurface,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_drop_down,
+                      color: TColor.onSurfaceVariant,
+                      size: 24,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Booking Button Section
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    storeController.fetchUserData();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+  }
+
+  // Format date and time for display
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  String _formatTime(TimeOfDay time) {
+    final now = DateTime.now();
+    final dateTime =
+        DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    return DateFormat('h:mm a').format(dateTime);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget _buildBookingButton() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16),
+      child: SizedBox(
+        width: double.infinity,
+        child: FadeInUp(
+          delay: Duration(milliseconds: 1200),
+          child: GestureDetector(
+            onTapDown: (_) {
+              _controller.forward();
+            },
+            onTapUp: (_) {
+              _controller.reverse();
+            },
+            onTapCancel: () {
+              _controller.reverse();
+            },
+            onTap: () async {
+              // Validate that all fields are filled
+              if (selectedProfessor == null) {
+                Get.snackbar(
+                  "Error",
+                  "Please select a professor",
+                  backgroundColor: TColor.error,
+                  colorText: Colors.white,
+                  duration: Duration(seconds: 3),
+                );
+                return;
+              }
+
+              // Check if user has already booked this course
+              final hasBooked =
+                  await storeController.hasUserBookedCourse(widget.courseID);
+              if (hasBooked) {
+                Get.snackbar(
+                  "Already Booked",
+                  "You have already booked this course",
+                  backgroundColor: TColor.warning,
+                  colorText: Colors.white,
+                  duration: Duration(seconds: 3),
+                );
+                return;
+              }
+
+              try {
+                // Call the reservation logic from StoreController
+                await storeController.reserveCourse(
+                  widget.courseName,
+                  widget.courseField,
+                  selectedProfessor!,
+                  _formatDate(selectedDate),
+                  _formatTime(selectedTime),
+                  widget.courseID,
+                  context,
+                );
+
+                // Show success dialog
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    icon: Icon(
+                      Icons.check_circle_outline,
+                      size: 48,
+                      color: TColor.success,
+                    ),
+                    title: Text(
+                      "Reservation Confirmed",
+                      style: TextStyle(
+                        color: TColor.onSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    content: Text(
+                      "Your course has been successfully booked with $selectedProfessor on ${_formatDate(selectedDate)} at ${_formatTime(selectedTime)}.",
+                      style: TextStyle(color: TColor.onSurfaceVariant),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Get.back();
+                          Get.back(); // Close the reservation page
+                        },
+                        child: Text("OK"),
+                      ),
+                    ],
+                  ),
+                );
+
+                // Schedule notification for the booked course
+                try {
+                  await notiService.scheduleNotification(
+                    id: widget.courseID.hashCode,
+                    title: "Upcoming Course: ${widget.courseName}",
+                    body:
+                        "Don't forget your course with $selectedProfessor today at ${_formatTime(selectedTime)}",
+                    hour: selectedTime.hour,
+                    minute: selectedTime.minute,
+                  );
+                  print(
+                      "Scheduled notification for course: ${widget.courseName}");
+                } catch (e) {
+                  print("Failed to schedule notification: $e");
+                  Get.snackbar(
+                    "Notification Error",
+                    "Could not schedule reminder",
+                    backgroundColor: TColor.error,
+                    colorText: Colors.white,
+                    duration: Duration(seconds: 3),
+                  );
+                }
+              } catch (e) {
+                Get.snackbar(
+                  "Error",
+                  "Failed to book course: ${e.toString()}",
+                  backgroundColor: TColor.error,
+                  colorText: Colors.white,
+                  duration: Duration(seconds: 3),
+                );
+              }
+            },
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 0.95, end: 1.0).animate(
+                CurvedAnimation(
+                  parent: _controller,
+                  curve: Curves.easeOut,
+                ),
+              ),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 60, vertical: 18),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [TColor.primary, TColor.secondary],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: Text(
+                    "Book Course",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ),

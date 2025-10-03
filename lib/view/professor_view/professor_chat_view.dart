@@ -43,8 +43,7 @@ class _ProfessorChatViewState extends State<ProfessorChatView> {
               children: [
                 SizedBox(height: 20),
                 CustomAppBar(
-                  name: "Ali",
-                  avatar: "assets/img/avatar.png",
+                 
                 ),
                 SizedBox(height: 25),
                 SizedBox(

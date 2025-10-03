@@ -53,8 +53,7 @@ class _ProfessorCourseViewState extends State<ProfessorCourseView> {
               children: [
                 SizedBox(height: 20),
                 CustomAppBar(
-                  name: "Ali",
-                  avatar: "assets/img/avatar.png",
+                 
                 ),
                 SizedBox(height: 80),
                 FadeInDown(

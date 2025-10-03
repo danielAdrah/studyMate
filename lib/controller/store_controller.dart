@@ -168,6 +168,22 @@ class StoreController extends GetxController {
     });
   }
 
+//======CHECK IF COURSE ALREADY BOOKED
+  Future<bool> hasUserBookedCourse(String courseID) async {
+    try {
+      final userId = FirebaseAuth.instance.currentUser!.uid;
+      final querySnapshot = await bookedCoursesCollection
+          .where('userID', isEqualTo: userId)
+          .where('id', isEqualTo: courseID)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print("Error checking booking status: ${e.toString()}");
+      return false;
+    }
+  }
+
 //======RESERVE A COURSE
   Future<void> reserveCourse(String courseName, courseField, professor, date,
       time, courseID, context) async {
@@ -181,6 +197,7 @@ class StoreController extends GetxController {
         'userID': FirebaseAuth.instance.currentUser!.uid,
         'id': courseID,
       });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("This course is booked")),
       );
@@ -260,10 +277,10 @@ class StoreController extends GetxController {
   }
 
 //=======ADD POST
-  Future<void> addPost(String postContent, year) async {
+  Future<void> addPost(String postContent, year, userName) async {
     try {
       DocumentReference response = await postsCollection.add({
-        'user': FirebaseAuth.instance.currentUser!.email,
+        'user': userName,
         'content': postContent,
         'timestamp': Timestamp.now(),
         'year': year,
@@ -405,7 +422,7 @@ class StoreController extends GetxController {
     });
   }
 
-//======
+//======DELETE USER ACCOUNT
   Future<void> deleteUser(String uid) async {
     try {
       // First, delete the user from Firebase Authentication
@@ -468,5 +485,37 @@ class StoreController extends GetxController {
         return post;
       }).toList();
     });
+  }
+
+  //======DELETE BOOKED COURSE
+  Future<void> deleteBookedCourse(String bookedCourseId) async {
+    try {
+      await bookedCoursesCollection.doc(bookedCourseId).delete();
+      print("======done deleting booked course");
+    } catch (e) {
+      print("Error deleting booked course: ${e.toString()}");
+      rethrow;
+    }
+  }
+
+  //DELETE ACCOUNT
+  Future<void> deleteAccount() async {
+    try {
+      // Delete user documents from Firestore
+      await firestore
+          .collection('Users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .delete();
+
+      // Delete the user from Firebase Authentication
+      await FirebaseAuth.instance.currentUser!.delete();
+
+      // Sign out the user
+      await FirebaseAuth.instance.signOut();
+
+      return;
+    } on FirebaseAuthException catch (e) {
+      throw Exception('Failed to delete account: ${e.message}');
+    }
   }
 }

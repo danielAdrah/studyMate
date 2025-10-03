@@ -50,18 +50,29 @@ class _ProfessorMainNavBarState extends State<ProfessorMainNavBar> {
                     width: 50,
                   )),
               IconButton(
-                  onPressed: () {
-                    setState(() {
-                      selectTab = 1;
-                      currentTabView = ProfessorNotification();
-                    });
-                  },
-                  icon: SvgPicture.asset(
-                    "assets/img/noti.svg",
-                    color: selectTab == 1 ? TColor.primary : Colors.grey,
-                    height: 50,
-                    width: 50,
-                  )),
+                onPressed: () {
+                  setState(() {
+                    selectTab = 1;
+                    currentTabView = ProfessorNotification();
+                  });
+                },
+                icon: Column(
+                  children: [
+                    Icon(
+                      Icons.monitor_sharp,
+                      color: selectTab == 1 ? TColor.primary : Colors.grey,
+                      size: 36,
+                    ),
+                    Text(
+                      "Notifications",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: selectTab == 1 ? TColor.primary : Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               IconButton(
                   onPressed: () {
                     setState(() {

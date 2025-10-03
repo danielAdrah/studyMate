@@ -15,11 +15,9 @@ import '../view/student_view/profile_view.dart';
 class CustomAppBar extends StatefulWidget {
   const CustomAppBar({
     super.key,
-    required this.name,
-    required this.avatar,
+ 
   });
-  final String name;
-  final String avatar;
+
 
   @override
   State<CustomAppBar> createState() => _CustomAppBarState();

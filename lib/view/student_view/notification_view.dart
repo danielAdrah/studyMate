@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, curly_braces_in_flow_control_structures
 
 import 'package:animate_do/animate_do.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -32,7 +31,7 @@ class _NotificationViewState extends State<NotificationView> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child:
-                    CustomAppBar(name: 'Ali', avatar: "assets/img/avatar.png"),
+                    CustomAppBar(),
               ),
               SizedBox(height: 35),
               Padding(

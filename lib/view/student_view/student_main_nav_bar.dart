@@ -8,6 +8,7 @@ import 'booked_courses.dart';
 import 'chat_view.dart';
 import 'explore_view.dart';
 import 'notification_view.dart';
+import 'profile_view.dart';
 
 class StudentMainNavBar extends StatefulWidget {
   const StudentMainNavBar({super.key});
@@ -23,7 +24,7 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: TColor.background,
+      // backgroundColor: TColor.background,
       body: PageStorage(
         bucket: pageStorageBucket,
         child: currentTabView,
@@ -32,9 +33,10 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
         height: 80,
         padding: EdgeInsets.zero,
         elevation: 0.5,
+        color: TColor.navBarBackground,
         child: SizedBox(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
                   onPressed: () {
@@ -43,30 +45,50 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
                       currentTabView = ExploreView();
                     });
                   },
-                  icon: SvgPicture.asset(
-                    "assets/img/explore.svg",
-                    color: selectTab == 0 ? TColor.primary : Colors.grey,
-                    height: 50,
-                    width: 50,
-                  )
-                  //  Image.asset(
-                  //   "assets/img/exploreIcon.png",
-                  //   color: selectTab == 0 ? TColor.primary : Colors.grey,
-                  // ),
-                  ),
-              IconButton(
-                  onPressed: () {
-                    setState(() {
-                      selectTab = 1;
-                      currentTabView = NotificationView();
-                    });
-                  },
-                  icon: SvgPicture.asset(
-                    "assets/img/noti.svg",
-                    width: 50,
-                    height: 50,
-                    color: selectTab == 1 ? TColor.primary : Colors.grey,
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.explore,
+                        color: selectTab == 0 ? TColor.primary : Colors.grey,
+                        size: 24,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Explore",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: selectTab == 0 ? TColor.primary : Colors.grey,
+                        ),
+                      ),
+                    ],
                   )),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    selectTab = 1;
+                    currentTabView = ProfileView();
+                  });
+                },
+                icon: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.person_3_rounded,
+                      color: selectTab == 1 ? TColor.primary : Colors.grey,
+                      size: 24,
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      "Profile",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: selectTab == 1 ? TColor.primary : Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               IconButton(
                   onPressed: () {
                     setState(() {
@@ -74,11 +96,23 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
                       currentTabView = ChatView();
                     });
                   },
-                  icon: SvgPicture.asset(
-                    "assets/img/chat.svg",
-                    color: selectTab == 2 ? TColor.primary : Colors.grey,
-                    height: 50,
-                    width: 50,
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.chat,
+                        color: selectTab == 2 ? TColor.primary : Colors.grey,
+                        size: 24,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Chat",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: selectTab == 2 ? TColor.primary : Colors.grey,
+                        ),
+                      ),
+                    ],
                   )),
               IconButton(
                   onPressed: () {
@@ -87,11 +121,23 @@ class _StudentMainNavBarState extends State<StudentMainNavBar> {
                       currentTabView = BookedCourses();
                     });
                   },
-                  icon: SvgPicture.asset(
-                    "assets/img/course.svg",
-                    color: selectTab == 3 ? TColor.primary : Colors.grey,
-                    height: 50,
-                    width: 50,
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.book,
+                        color: selectTab == 3 ? TColor.primary : Colors.grey,
+                        size: 24,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Courses",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: selectTab == 3 ? TColor.primary : Colors.grey,
+                        ),
+                      ),
+                    ],
                   )),
             ],
           ),

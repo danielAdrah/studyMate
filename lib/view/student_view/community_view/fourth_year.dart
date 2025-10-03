@@ -28,6 +28,7 @@ class _FourthYearState extends State<FourthYear> {
   @override
   void initState() {
     controller.getFourthPost();
+    controller.getCurrentUserName();
     super.initState();
   }
 
@@ -37,57 +38,61 @@ class _FourthYearState extends State<FourthYear> {
       backgroundColor: TColor.background,
       body: SafeArea(
           child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomTextForm(
-                        hinttext: "Enter your post",
-                        mycontroller: postTextController,
-                        secure: false),
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        controller.addPost(
-                            postTextController.text, 'fourthYear');
-                        postTextController.clear();
-                      },
-                      icon: Icon(
-                        Icons.arrow_circle_up_rounded,
-                        color: TColor.primary,
-                        size: 40,
-                      ))
-                ],
-              ),
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: Obx(
-                () => ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: controller.fourthPost.length,
-                  itemBuilder: (context, index) {
-                    var post = controller.fourthPost[index];
-                    return PostTile(
-                        postDate: formatDate(post['timestamp']),
-                        postID: post.id,
-                        user: post['user'],
-                        content: post['content'],
-                        commentOnPressed: () {
-                          Get.to(CommentScreen(
-                            postId: post.id,
-                          ));
-                        });
-                  },
+        child: Obx(
+          () => Column(
+            children: [
+              SizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextForm(
+                          hinttext: "Enter your post",
+                          mycontroller: postTextController,
+                          secure: false),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          controller.addPost(
+                              postTextController.text, 'fourthYear', controller.userName.value);
+                          postTextController.clear();
+                        },
+                        icon: Icon(
+                          Icons.arrow_circle_up_rounded,
+                          color: TColor.primary,
+                          size: 40,
+                        ))
+                  ],
                 ),
               ),
-            ),
-          ],
+              controller.fourthPost.isEmpty
+                  ? Text("There are no posts yet!",
+                      style: TextStyle(
+                          color: TColor.black, fontWeight: FontWeight.bold))
+                  : SizedBox(
+                      width: double.infinity,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: controller.fourthPost.length,
+                        itemBuilder: (context, index) {
+                          var post = controller.fourthPost[index];
+                          return PostTile(
+                              postDate: formatDate(post['timestamp']),
+                              postID: post.id,
+                              user: post['user'],
+                              content: post['content'],
+                              commentOnPressed: () {
+                                Get.to(CommentScreen(
+                                  postId: post.id,
+                                ));
+                              });
+                        },
+                      ),
+                    ),
+            ],
+          ),
         ),
       )),
     );

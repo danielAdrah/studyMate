@@ -20,8 +20,14 @@ class CommentScreen extends StatefulWidget {
 
 class _CommentScreenState extends State<CommentScreen> {
   final commentTextController = TextEditingController();
-
   final controller = Get.put(StoreController());
+
+  @override
+  void initState() {
+    controller.getCurrentUserName();
+    super.initState();
+  }
+
   void addComment(String comment) {
     FirebaseFirestore.instance
         .collection('posts')
@@ -29,7 +35,7 @@ class _CommentScreenState extends State<CommentScreen> {
         .collection('comments')
         .add({
       'comment': comment,
-      'user': FirebaseAuth.instance.currentUser!.email,
+      'user': controller.userName.value,
       'timestamp': Timestamp.now(),
     });
   }

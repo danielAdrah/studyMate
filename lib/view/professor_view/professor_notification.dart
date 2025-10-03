@@ -31,8 +31,7 @@ class _ProfessorNotificationState extends State<ProfessorNotification> {
               SizedBox(height: 25),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15),
-                child:
-                    CustomAppBar(name: 'Ali', avatar: "assets/img/avatar.png"),
+                child: CustomAppBar(),
               ),
               SizedBox(height: 35),
               Padding(

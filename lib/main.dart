@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_constructors, avoid_print, use_build_context_synchronously, unnecessary_null_in_if_null_operators
 
 import 'package:firebase_core/firebase_core.dart';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'view/auth_view/auth_gate.dart';
@@ -16,6 +16,10 @@ void main() async {
   final notificationService = NotificationService();
   await notificationService.initNotifications();
   await notificationService.initLocalNotifications();
+
+  // Initialize SharedPreferences
+  await SharedPreferences.getInstance();
+
   runApp(const MyApp());
 }
 

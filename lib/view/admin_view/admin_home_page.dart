@@ -1,11 +1,13 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../theme.dart';
 import 'courses_tab.dart';
 import 'professors_tab.dart';
+import 'reports_tab.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});
@@ -35,27 +37,28 @@ class _AdminHomePageState extends State<AdminHomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
-                  onPressed: () {
-                    setState(() {
-                      selectTab = 0;
-                      currentTabView = ProfessorsTab();
-                    });
-                  },
-                  icon: Column(
-                    children: [
-                      Icon(
-                        Icons.person,
+                onPressed: () {
+                  setState(() {
+                    selectTab = 0;
+                    currentTabView = ProfessorsTab();
+                  });
+                },
+                icon: Column(
+                  children: [
+                    Icon(
+                      Icons.person,
+                      color: selectTab == 0 ? TColor.primary : Colors.grey,
+                      size: 40,
+                    ),
+                    Text(
+                      "Users",
+                      style: TextStyle(
                         color: selectTab == 0 ? TColor.primary : Colors.grey,
-                        size: 40,
                       ),
-                      Text(
-                        "Professors",
-                        style: TextStyle(
-                          color: selectTab == 0 ? TColor.primary : Colors.grey,
-                        ),
-                      ),
-                    ],
-                  )),
+                    ),
+                  ],
+                ),
+              ),
               IconButton(
                   onPressed: () {
                     setState(() {
@@ -69,6 +72,29 @@ class _AdminHomePageState extends State<AdminHomePage> {
                     height: 50,
                     color: selectTab == 1 ? TColor.primary : Colors.grey,
                   )),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    selectTab = 2;
+                    currentTabView = ReportsTab();
+                  });
+                },
+                icon: Column(
+                  children: [
+                    Icon(
+                      CupertinoIcons.doc_chart,
+                      color: selectTab == 2 ? TColor.primary : Colors.grey,
+                      size: 37,
+                    ),
+                    Text(
+                      "Reports",
+                      style: TextStyle(
+                        color: selectTab == 2 ? TColor.primary : Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

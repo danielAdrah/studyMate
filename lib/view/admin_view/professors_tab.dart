@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable, avoid_print
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable, avoid_print, use_build_context_synchronously
 
 import 'package:animate_do/animate_do.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -36,6 +36,38 @@ class _ProfessorsTabState extends State<ProfessorsTab> {
     }
   }
 
+  void deleteAccount(BuildContext context, String id) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('Delete Account'),
+              content: Text('Are you sure you want to delete your account?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    try {
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(id)
+                          .delete();
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Account deleted successfully')));
+                      Navigator.of(context).pop();
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Failed to delete account: $e')));
+                    }
+                  },
+                  child: Text('Delete'),
+                ),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -49,9 +81,7 @@ class _ProfessorsTabState extends State<ProfessorsTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 20),
-                AdminAppbar(
-                  avatar: "assets/img/avatar.png",
-                ),
+                AdminAppbar(),
                 SizedBox(height: 20),
                 FadeInDown(
                     delay: Duration(milliseconds: 600),
@@ -141,7 +171,9 @@ class _ProfessorsTabState extends State<ProfessorsTab> {
                                                   "This account has been deActivated")),
                                         );
                                       },
-                                      deleteOnPressed: () {},
+                                      deleteOnPressed: () async {
+                                        deleteAccount(context, user['uid']);
+                                      },
                                     ),
                                   );
                                 } else {
@@ -183,7 +215,9 @@ class _ProfessorsTabState extends State<ProfessorsTab> {
                                                   "This account has been deactivated")),
                                         );
                                       },
-                                      deleteOnPressed: () {},
+                                      deleteOnPressed: () async {
+                                        deleteAccount(context, user['uid']);
+                                      },
                                     ),
                                   );
                                 } else {
@@ -237,6 +271,14 @@ class ProfrssorTile extends StatelessWidget {
         // height: height / 3,
         decoration: BoxDecoration(
           color: TColor.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey,
+              offset: Offset(1, 1.5),
+              blurRadius: 0.2,
+              blurStyle: BlurStyle.outer,
+            )
+          ],
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(

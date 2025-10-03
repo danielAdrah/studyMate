@@ -58,9 +58,7 @@ class _CoursesTabState extends State<CoursesTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 20),
-                AdminAppbar(
-                  avatar: "assets/img/avatar.png",
-                ),
+                AdminAppbar(),
                 SizedBox(height: 20),
                 FadeInDown(
                     delay: Duration(milliseconds: 600),
@@ -241,6 +239,14 @@ class CoueseTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: TColor.white,
           borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey,
+              offset: Offset(1, 1.5),
+              blurRadius: 0.2,
+              blurStyle: BlurStyle.outer,
+            )
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
