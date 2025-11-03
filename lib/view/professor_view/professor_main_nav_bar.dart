@@ -8,6 +8,8 @@ import '../student_view/chat_view.dart';
 import 'professor_course_view.dart';
 import 'professor_explore.dart';
 import 'professor_notification.dart';
+import 'assignment_dashboard.dart';
+import 'professor_profile.dart';
 
 class ProfessorMainNavBar extends StatefulWidget {
   const ProfessorMainNavBar({super.key});
@@ -29,12 +31,12 @@ class _ProfessorMainNavBarState extends State<ProfessorMainNavBar> {
         child: currentTabView,
       ),
       bottomNavigationBar: BottomAppBar(
-        height: 80,
+        height: 70,
         padding: EdgeInsets.zero,
         elevation: 0.5,
         child: SizedBox(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
                   onPressed: () {
@@ -43,36 +45,49 @@ class _ProfessorMainNavBarState extends State<ProfessorMainNavBar> {
                       currentTabView = ProfessorExplore();
                     });
                   },
-                  icon: SvgPicture.asset(
-                    "assets/img/explore.svg",
-                    color: selectTab == 0 ? TColor.primary : Colors.grey,
-                    height: 50,
-                    width: 50,
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.explore,
+                        color: selectTab == 0 ? TColor.primary : Colors.grey,
+                        size: 24,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Explore",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: selectTab == 0 ? TColor.primary : Colors.grey,
+                        ),
+                      ),
+                    ],
                   )),
               IconButton(
-                onPressed: () {
-                  setState(() {
-                    selectTab = 1;
-                    currentTabView = ProfessorNotification();
-                  });
-                },
-                icon: Column(
-                  children: [
-                    Icon(
-                      Icons.monitor_sharp,
-                      color: selectTab == 1 ? TColor.primary : Colors.grey,
-                      size: 36,
-                    ),
-                    Text(
-                      "Notifications",
-                      style: TextStyle(
-                        fontSize: 13,
+                  onPressed: () {
+                    setState(() {
+                      selectTab = 1;
+                      currentTabView = AssignmentDashboard();
+                    });
+                  },
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.assignment,
                         color: selectTab == 1 ? TColor.primary : Colors.grey,
+                        size: 24,
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Assignments",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: selectTab == 1 ? TColor.primary : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  )),
               IconButton(
                   onPressed: () {
                     setState(() {
@@ -80,11 +95,23 @@ class _ProfessorMainNavBarState extends State<ProfessorMainNavBar> {
                       currentTabView = ChatView();
                     });
                   },
-                  icon: SvgPicture.asset(
-                    "assets/img/chat.svg",
-                    color: selectTab == 2 ? TColor.primary : Colors.grey,
-                    height: 50,
-                    width: 50,
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.chat,
+                        color: selectTab == 2 ? TColor.primary : Colors.grey,
+                        size: 24,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Chat",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: selectTab == 2 ? TColor.primary : Colors.grey,
+                        ),
+                      ),
+                    ],
                   )),
               IconButton(
                   onPressed: () {
@@ -93,11 +120,48 @@ class _ProfessorMainNavBarState extends State<ProfessorMainNavBar> {
                       currentTabView = ProfessorCourseView();
                     });
                   },
-                  icon: SvgPicture.asset(
-                    "assets/img/course.svg",
-                    color: selectTab == 3 ? TColor.primary : Colors.grey,
-                    height: 50,
-                    width: 50,
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.book,
+                        color: selectTab == 3 ? TColor.primary : Colors.grey,
+                        size: 24,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Courses",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: selectTab == 3 ? TColor.primary : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  )),
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      selectTab = 4;
+                      currentTabView = ProfessorProfile();
+                    });
+                  },
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.person_3,
+                        color: selectTab == 4 ? TColor.primary : Colors.grey,
+                        size: 24,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Profile",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: selectTab == 4 ? TColor.primary : Colors.grey,
+                        ),
+                      ),
+                    ],
                   )),
             ],
           ),

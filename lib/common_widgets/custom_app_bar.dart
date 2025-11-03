@@ -13,11 +13,12 @@ import '../theme.dart';
 import '../view/student_view/profile_view.dart';
 
 class CustomAppBar extends StatefulWidget {
+  final String? title;
+
   const CustomAppBar({
     super.key,
- 
+    this.title,
   });
-
 
   @override
   State<CustomAppBar> createState() => _CustomAppBarState();
@@ -29,7 +30,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  
 
   @override
   void initState() {
@@ -39,45 +39,75 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          FadeInLeft(
-            delay: Duration(milliseconds: 500),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Hello!",
-                    style: TextStyle(
-                        color: TColor.black,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700)),
-                Text(storeController.userFullName.value,
-                    style: TextStyle(
-                        color: TColor.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500)),
-              ],
-            ),
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          decoration: BoxDecoration(
+            // color: TColor.background,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 4,
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
-          //later will change it when the user selects new image
-          FadeInRight(
-            delay: Duration(milliseconds: 500),
-            child: InkWell(
-              onTap: () {
-                Get.to(ProfileView());
-              },
-              child: CircleAvatar(
-                  radius: 30,
-                  backgroundImage: controller.imagePath.value == null
-                      ? AssetImage("assets/img/user.png")
-                      : FileImage(File(controller.imagePath.value!))
-                          as ImageProvider<Object>?),
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (widget.title != null)
+                Text(
+                  widget.title!,
+                  style: TextStyle(
+                    color: TColor.onSurface,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              else
+                Obx(
+                  () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Hello!",
+                          style: TextStyle(
+                              color: TColor.black,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700)),
+                      Text(storeController.userFullName.value,
+                          style: TextStyle(
+                              color: TColor.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ),
+              // Profile Avatar
+              FadeInRight(
+                delay: Duration(milliseconds: 500),
+                child: InkWell(
+                  onTap: () {
+                    Get.to(ProfileView());
+                  },
+                  child: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: controller.imagePath.value == null
+                          ? AssetImage("assets/img/user.png")
+                          : FileImage(File(controller.imagePath.value!))
+                              as ImageProvider<Object>?),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        // Add divider only if title is shown
+        if (widget.title != null)
+          Divider(
+            height: 1,
+            color: TColor.primary.withOpacity(0.2),
+          ),
+      ],
     );
   }
 }

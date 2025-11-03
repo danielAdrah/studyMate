@@ -33,219 +33,312 @@ class _ProfessorExploreState extends State<ProfessorExplore> {
 
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: TColor.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20),
-                CustomAppBar(),
-                SizedBox(height: 20),
-                FadeInDown(
-                    delay: Duration(milliseconds: 600),
-                    child: SearchAndFilter(
-                      searchCont: searchCont,
-                      onChanged: (value) {
-                        if (value.isNotEmpty) {
-                          setState(() {
-                            haveCourseSearched = true; // Reset search state
-                          });
-                        } else {
-                          setState(() {
-                            haveCourseSearched = false; // Reset search state
-                          });
-                        }
-                      },
-                    )),
-                SizedBox(height: 25),
-                FadeInDown(
-                  delay: Duration(milliseconds: 700),
-                  child: Text(
-                    "Popular Professors",
-                    style: TextStyle(
-                      color: TColor.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 170,
+              floating: true,
+              backgroundColor: TColor.background,
+              elevation: 0,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 40),
+                      FadeInDown(
+                        delay: const Duration(milliseconds: 300),
+                        child: Text(
+                          "Explore",
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: TColor.black,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      FadeInDown(
+                        delay: const Duration(milliseconds: 400),
+                        child: Text(
+                          "Discover courses and connect with professors",
+                          style: TextStyle(
+                            fontSize: 16,
+                            // color: TColor.black.withOpacity(0.6),
+                            color: TColor.primary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                   ),
                 ),
-                SizedBox(height: 30),
-                //list of professors
-                FadeInDown(
-                  delay: Duration(milliseconds: 750),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 170,
-                    child: StreamBuilder(
-                        stream: controller.getProfessorStream(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            return Text(snapshot.error.toString());
-                          }
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Text("Please Wait");
-                          }
-                          if (!snapshot.hasData && snapshot.data!.isEmpty) {
-                            return Text("There are no profrssors yet");
-                          }
-                          return ListView.builder(
-                              physics: BouncingScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (context, index) {
-                                var pro = snapshot.data![index];
-                                if (pro["email"] != auth.currentUser!.email) {
-                                  return ProfessorCell(
-                                      profName: pro[
-                                          'name'], //this is the name of the professor
-                                      profImg:
-                                          "assets/img/woman.png", //this is the professor image
-                                      profField: pro[
-                                          'specialty'], //this is the field which the professor studes in
-                                      onTap:
-                                          () {} //this will navigate us to the selected professor detail page
-                                      );
-                                } else {
-                                  return Container();
-                                }
-                              });
-                        }),
-                  ),
-                ),
-
-                SizedBox(height: 15),
-                FadeInDown(
-                  delay: Duration(milliseconds: 850),
-                  child: Text(
-                    "Popular Courses",
-                    style: TextStyle(
-                      color: TColor.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 30),
-                // controller.allCourse.isEmpty
-                //     ? Center(
-                //         child: Text("There are no courses to be displayed yet!",
-                //             style: TextStyle(
-                //                 color: Colors.black,
-                //                 fontWeight: FontWeight.bold)),
-                //       )
-                //     :
-                //     //list of courses
-                //     FadeInDown(
-                //         delay: Duration(milliseconds: 900),
-                //         child: SizedBox(
-                //             width: double.infinity,
-                //             height: 150,
-                //             child: Obx(
-                //               () => ListView.builder(
-                //                   physics: BouncingScrollPhysics(),
-                //                   scrollDirection: Axis.horizontal,
-                //                   itemCount: controller.allCourse.length,
-                //                   itemBuilder: (context, index) {
-                //                     var course = controller.allCourse[index];
-                //                     return CourseCell(
-                //                       courseName: course['courseName'],
-                //                       courseField: course['courseField'],
-                //                       onTap: () {},
-                //                     );
-                //                   }),
-                //             )),
-                //       ),
-                FadeInDown(
-                  delay: Duration(milliseconds: 900),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 150,
-                    child: StreamBuilder(
-                        stream: FirebaseFirestore.instance
-                            .collection("courses")
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            return Text(snapshot.error.toString());
-                          }
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(
-                                child: CircularProgressIndicator(
-                              color: Colors.red,
-                            ));
-                          }
-
-                          // if (!snapshot.hasData) {
-                          //   return Text(
-                          //     "There are no courses yet",
-                          //     style: TextStyle(fontWeight: FontWeight.bold),
-                          //   );
-                          // }
-                          if (snapshot.hasData || snapshot.data != null) {
-                            List snap = snapshot.data!.docs;
-                            if (haveCourseSearched) {
-                              snap.removeWhere((e) {
-                                return !e
-                                    .data()["courseName"]
-                                    .toString()
-                                    .toLowerCase()
-                                    .startsWith(searchCont.text);
-                              });
-                              return ListView.builder(
-                                  physics: BouncingScrollPhysics(),
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: snap.length,
-                                  itemBuilder: (context, index) {
-                                    var course = snap[index];
-                                    return CourseCell(
-                                      courseName: course['courseName'],
-                                      courseField: course['courseField'],
-                                      coursePrice: "200",
-                                      courseTime: "3h",
-                                      onTap: () {},
-                                    );
-                                  });
-                            } else {
-                              return ListView.builder(
-                                  physics: BouncingScrollPhysics(),
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: snap.length,
-                                  itemBuilder: (context, index) {
-                                    var course = snap[index];
-                                    return CourseCell(
-                                      courseName: course['courseName'],
-                                      courseField: course['courseField'],
-                                      courseTime: "3h",
-                                      coursePrice: "200",
-                                      onTap: () {},
-                                    );
-                                  });
-                            }
-                          } else {
-                            return Text(
-                              "There are no courses yet",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            );
-                          }
-                        }),
-                  ),
-                ),
-                SizedBox(height: 20),
-
-                SizedBox(height: 30),
-              ],
+              ),
             ),
-          ),
+            // Search Section
+            SliverToBoxAdapter(
+              child: FadeInDown(
+                delay: const Duration(milliseconds: 500),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+                  child: _buildModernSearchBar(),
+                ),
+              ),
+            ),
+
+            // Popular Professors Section
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FadeInDown(
+                      delay: const Duration(milliseconds: 600),
+                      child: _buildSectionHeader(
+                        "Popular Professors",
+                        "Meet our expert educators",
+                        Icons.school,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FadeInDown(
+                      delay: const Duration(milliseconds: 700),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: media.height * 0.24,
+                        child: StreamBuilder(
+                            stream: controller.getProfessorStream(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return Text(snapshot.error.toString());
+                              }
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Text("Please Wait");
+                              }
+                              if (!snapshot.hasData && snapshot.data!.isEmpty) {
+                                return Text("There are no profrssors yet");
+                              }
+                              return ListView.builder(
+                                  physics: BouncingScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: snapshot.data!.length,
+                                  itemBuilder: (context, index) {
+                                    var pro = snapshot.data![index];
+                                    if (pro["email"] !=
+                                        auth.currentUser!.email) {
+                                      return ProfessorCell(
+                                          profName: pro[
+                                              'name'], //this is the name of the professor
+                                          profImg:
+                                              "assets/img/woman.png", //this is the professor image
+                                          profField: pro[
+                                              'specialty'], //this is the field which the professor studes in
+                                          onTap:
+                                              () {} //this will navigate us to the selected professor detail page
+                                          );
+                                    } else {
+                                      return Container();
+                                    }
+                                  });
+                            }),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                  ],
+                ),
+              ),
+            ),
+
+            // Popular Courses Section
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FadeInDown(
+                      delay: const Duration(milliseconds: 800),
+                      child: _buildSectionHeader(
+                        "Popular Courses",
+                        "Start your learning journey",
+                        Icons.book,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FadeInDown(
+                      delay: const Duration(milliseconds: 900),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: media.height * 0.25,
+                        child: StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection("courses")
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return Text(snapshot.error.toString());
+                              }
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                    child: CircularProgressIndicator(
+                                  color: Colors.red,
+                                ));
+                              }
+
+                              // if (!snapshot.hasData) {
+                              //   return Text(
+                              //     "There are no courses yet",
+                              //     style: TextStyle(fontWeight: FontWeight.bold),
+                              //   );
+                              // }
+                              if (snapshot.hasData || snapshot.data != null) {
+                                List snap = snapshot.data!.docs;
+                                if (haveCourseSearched) {
+                                  snap.removeWhere((e) {
+                                    return !e
+                                        .data()["courseName"]
+                                        .toString()
+                                        .toLowerCase()
+                                        .startsWith(searchCont.text);
+                                  });
+                                  return ListView.builder(
+                                      physics: BouncingScrollPhysics(),
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: snap.length,
+                                      itemBuilder: (context, index) {
+                                        var course = snap[index];
+                                        return CourseCell(
+                                          courseName: course['courseName'],
+                                          courseField: course['courseField'],
+                                          coursePrice: "200",
+                                          courseTime: "3h",
+                                          onTap: () {},
+                                        );
+                                      });
+                                } else {
+                                  return ListView.builder(
+                                      physics: BouncingScrollPhysics(),
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: snap.length,
+                                      itemBuilder: (context, index) {
+                                        var course = snap[index];
+                                        return CourseCell(
+                                          courseName: course['courseName'],
+                                          courseField: course['courseField'],
+                                          courseTime: "3h",
+                                          coursePrice: "200",
+                                          onTap: () {},
+                                        );
+                                      });
+                                }
+                              } else {
+                                return Text(
+                                  "There are no courses yet",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                );
+                              }
+                            }),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
+
+  // Modern Search Bar
+  Widget _buildModernSearchBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: TColor.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: TColor.primary.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: CustomTextForm(
+        hinttext: "Search courses, professors...",
+        mycontroller: searchCont,
+        secure: false,
+        suffixIcon: Icons.search_rounded,
+        color: TColor.primary,
+        onChanged: (value) {
+          if (value.isNotEmpty) {
+            setState(() {
+              haveCourseSearched = true;
+            });
+          } else {
+            setState(() {
+              haveCourseSearched = false;
+            });
+          }
+        },
+      ),
+    );
+  }
+}
+
+// Section Header with Icon
+Widget _buildSectionHeader(String title, String subtitle, IconData icon) {
+  return Row(
+    children: [
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: TColor.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          icon,
+          color: TColor.primary,
+          size: 24,
+        ),
+      ),
+      const SizedBox(width: 16),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: TColor.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 14,
+                color: TColor.black.withOpacity(0.6),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }
 
 //==================search && filter===========================
@@ -276,7 +369,7 @@ class SearchAndFilter extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
           ),
           child: CustomTextForm(
-            hinttext: "Search your teacher or course",
+            hinttext: "Search your professor or course",
             onChanged: onChanged,
             mycontroller: searchCont,
             secure: false,

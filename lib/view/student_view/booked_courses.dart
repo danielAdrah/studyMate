@@ -36,7 +36,6 @@ class _BookedCoursesState extends State<BookedCourses> {
             SliverAppBar(
               expandedHeight: 120,
               floating: true,
-              pinned: true,
               backgroundColor: TColor.background,
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(

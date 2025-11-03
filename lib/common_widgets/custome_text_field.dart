@@ -12,6 +12,7 @@ class CustomTextForm extends StatelessWidget {
   final TextEditingController mycontroller;
   final String? Function(String?)? validator;
   void Function(String)? onChanged;
+  int? maxLines;
 
   CustomTextForm({
     super.key,
@@ -24,6 +25,7 @@ class CustomTextForm extends StatelessWidget {
     this.focusNode,
     required this.secure,
     this.onTap,
+    this.maxLines,
   });
 
   @override
@@ -34,6 +36,7 @@ class CustomTextForm extends StatelessWidget {
       focusNode: focusNode,
       onChanged: onChanged,
       validator: validator,
+      maxLines: maxLines ?? 1,
       style: TextStyle(color: Colors.black),
       decoration: InputDecoration(
         hintText: hinttext,

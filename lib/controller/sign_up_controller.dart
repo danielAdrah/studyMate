@@ -29,7 +29,6 @@ class SignUpController extends GetxController {
         email: mail,
         password: passWord,
       );
-      logInLoading.value = false;
 
       if (credential.user!.emailVerified) {
         //here we check if the user has verified his account
@@ -47,39 +46,148 @@ class SignUpController extends GetxController {
           String? role = userData['role'];
           print("=================$role");
           if (role == "Student") {
+            logInLoading.value = false;
             Get.off(StudentMainNavBar());
           } else if (role == "Professor") {
+            logInLoading.value = false;
             Get.off(ProfessorMainNavBar());
           } else if (role == "Admin") {
+            logInLoading.value = false;
             Get.off(AdminHomePage());
           } else {
+            logInLoading.value = false;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('User role not found. Please contact support.'),
+                backgroundColor: Colors.orange,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            );
             print("no role");
           }
+        } else {
+          logInLoading.value = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('User data not found. Please contact support.'),
+              backgroundColor: Colors.orange,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
         }
       } else {
         logInLoading.value = false;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please Verify your account first!')),
+          SnackBar(
+            content: Text('Please verify your email address first!'),
+            backgroundColor: Colors.orange,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            action: SnackBarAction(
+              label: 'Resend',
+              textColor: Colors.white,
+              onPressed: () {
+                credential.user!.sendEmailVerification();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Verification email sent!'),
+                    backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         );
         print("please verfiy first");
       }
     } on FirebaseAuthException catch (e) {
       logInLoading.value = false;
-      print("not done");
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('user-not-found')),
-        );
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Wrong password provided for that user.')),
-        );
+      String errorMessage = 'Login failed. Please try again.';
+
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No account found with this email address.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Incorrect password. Please try again.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Invalid email address format.';
+          break;
+        case 'user-disabled':
+          errorMessage = 'This account has been disabled.';
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Too many failed attempts. Please try again later.';
+          break;
+        case 'invalid-credential':
+          errorMessage =
+              'Invalid email or password. Please check your credentials.';
+          break;
+        default:
+          errorMessage = 'Login failed: ${e.message}';
       }
 
+      print('FirebaseAuthException: ${e.code} - ${e.message}');
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Incorrect User credentials")),
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white, size: 20),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  errorMessage,
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: Duration(seconds: 4),
+        ),
+      );
+    } catch (e) {
+      logInLoading.value = false;
+      print('Unexpected error: $e');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white, size: 20),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'An unexpected error occurred. Please try again.',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       );
     }
   }
@@ -88,7 +196,7 @@ class SignUpController extends GetxController {
   Future signUp(String mail, passWord, accountType, specialty, name,
       BuildContext context) async {
     try {
-       String? token = await FirebaseMessaging.instance.getToken();
+      String? token = await FirebaseMessaging.instance.getToken();
       signUpLoading.value = true;
       final credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(

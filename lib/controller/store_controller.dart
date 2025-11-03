@@ -29,6 +29,7 @@ class StoreController extends GetxController {
   RxBool courseLoading = false.obs;
   RxBool allcourseLoading = false.obs;
   RxBool addCourseLoading = false.obs;
+  RxBool addPostLoading = false.obs;
   RxDouble courseRate = RxDouble(0.0);
   RxInt count = RxInt(0);
   RxList<QueryDocumentSnapshot> posts = <QueryDocumentSnapshot>[].obs;
@@ -198,9 +199,6 @@ class StoreController extends GetxController {
         'id': courseID,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("This course is booked")),
-      );
       print("======= done adding");
     } catch (e) {
       print("=======booked ${e.toString()}");
@@ -279,6 +277,7 @@ class StoreController extends GetxController {
 //=======ADD POST
   Future<void> addPost(String postContent, year, userName) async {
     try {
+      addPostLoading.value = true;
       DocumentReference response = await postsCollection.add({
         'user': userName,
         'content': postContent,
@@ -290,9 +289,12 @@ class StoreController extends GetxController {
       await getSecondPost();
       await getThirdPost();
       await getFourthPost();
+      addPostLoading.value = false;
       print("=======done post");
     } catch (e) {
+      addPostLoading.value = false;
       print(e.toString());
+      rethrow;
     }
   }
 
@@ -393,6 +395,7 @@ class StoreController extends GetxController {
 //=====ADD COMMENTS
   addComment(String comment, postID) async {
     try {
+      addPostLoading.value = true;
       await postsCollection.doc(postID).collection('comments').add({
         'comment': comment,
         'user': FirebaseAuth.instance.currentUser!.email,
@@ -400,9 +403,12 @@ class StoreController extends GetxController {
       });
       fetchPostStream();
       await getFirstPost();
+      addPostLoading.value = false;
       print("done comment");
     } catch (e) {
+      addPostLoading.value = false;
       print(e.toString());
+      rethrow;
     }
   }
 
@@ -467,6 +473,8 @@ class StoreController extends GetxController {
         .map((snapshot) {
       return snapshot.docs.map((doc) {
         final notification = doc.data();
+        // Add the document ID to the notification data
+        notification['documentId'] = doc.id;
         return notification;
       }).toList();
     });
@@ -517,5 +525,158 @@ class StoreController extends GetxController {
     } on FirebaseAuthException catch (e) {
       throw Exception('Failed to delete account: ${e.message}');
     }
+  }
+
+  // Method to create a notification in Firebase
+  Future<void> createNotification({
+    required String userId,
+    required String title,
+    required String body,
+    String? courseId,
+    String? courseName,
+    String? courseField,
+    String? professor,
+    DateTime? scheduledDate,
+    String type = 'general',
+    int? notificationId,
+  }) async {
+    try {
+      final docRef = firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .doc();
+
+      await firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .add({
+        'title': title,
+        'body': body,
+        'courseId': courseId,
+        'courseName': courseName,
+        'courseField': courseField,
+        'professor': professor,
+        'scheduledDate':
+            scheduledDate != null ? Timestamp.fromDate(scheduledDate) : null,
+        'timestamp': FieldValue.serverTimestamp(),
+        'isRead': false,
+        'type': type,
+        'notificationId': docRef.id,
+      });
+      print("Notification created successfully: $title");
+    } catch (e) {
+      print("Failed to create notification: $e");
+      throw e;
+    }
+  }
+
+  // Method to mark notification as read
+  Future<void> markNotificationAsRead(
+      String userId, String notificationId) async {
+    try {
+      await firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .doc(notificationId)
+          .update({'isRead': true});
+    } catch (e) {
+      print("Failed to mark notification as read: $e");
+    }
+  }
+
+  // Method to get professor's device token by name
+  Future<String?> getProfessorDeviceToken(String professorName) async {
+    try {
+      final querySnapshot = await firestore
+          .collection('users')
+          .where('name', isEqualTo: professorName)
+          .where('role', isEqualTo: 'Professor')
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final professorDoc = querySnapshot.docs.first;
+        final token = professorDoc.data()['token'] as String?;
+        print("Professor $professorName device token: $token");
+        return token;
+      } else {
+        print("Professor $professorName not found");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting professor device token: $e");
+      return null;
+    }
+  }
+
+  // Method to delete a notification from Firebase using the document ID
+  Future<void> deleteNotification(String userId, String documentId) async {
+    try {
+      await firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .doc(documentId)
+          .delete();
+      print("Notification deleted successfully: $documentId");
+    } catch (e) {
+      print("Failed to delete notification: $e");
+      rethrow;
+    }
+  }
+
+  // Method to get professor's user ID by name
+  Future<String?> getProfessorUserId(String professorName) async {
+    try {
+      final querySnapshot = await firestore
+          .collection('users')
+          .where('name', isEqualTo: professorName)
+          .where('role', isEqualTo: 'Professor')
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final professorDoc = querySnapshot.docs.first;
+        final userId = professorDoc.id;
+        print("Professor $professorName user ID: $userId");
+        return userId;
+      } else {
+        print("Professor $professorName not found");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting professor user ID: $e");
+      return null;
+    }
+  }
+
+  //======
+  Future<List<dynamic>> getStudentList() async {
+    final snapshots = await firestore
+        .collection("users")
+        .where('role', isEqualTo: 'Student')
+        .get();
+
+    return snapshots.docs.map((doc) => doc.data()).toList();
+  }
+
+  //========
+  Future<List<dynamic>> getProfessorList() async {
+    final snapshots = await firestore
+        .collection("users")
+        .where('role', isEqualTo: 'Professor')
+        .get();
+
+    return snapshots.docs.map((doc) => doc.data()).toList();
+  }
+
+  //=====
+  Future<List<dynamic>> getUserList() async {
+    final snapshots = await firestore.collection("users").get();
+
+    return snapshots.docs.map((doc) => doc.data()).toList();
   }
 }

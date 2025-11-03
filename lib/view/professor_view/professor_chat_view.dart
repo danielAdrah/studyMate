@@ -42,9 +42,7 @@ class _ProfessorChatViewState extends State<ProfessorChatView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 20),
-                CustomAppBar(
-                 
-                ),
+                CustomAppBar(),
                 SizedBox(height: 25),
                 SizedBox(
                   width: double.infinity,

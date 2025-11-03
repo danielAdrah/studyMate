@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'notification_service.dart';
 
 class UserService extends ChangeNotifier {
   static final UserService _instance = UserService._internal();
@@ -75,7 +76,34 @@ class UserService extends ChangeNotifier {
         clearUserData();
       } else {
         getUserRole(); // Fetch role for new user
+        saveDeviceToken(); // Save device token for notifications
       }
     });
+  }
+
+  // Save device token for Firebase messaging
+  Future<void> saveDeviceToken() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+
+      // Get device token from notification service
+      final NotificationService notiService = NotificationService();
+      final deviceToken = await notiService.getDeviceToken();
+
+      if (deviceToken != null && deviceToken.isNotEmpty) {
+        // Save token to Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({
+          'deviceToken': deviceToken,
+          'lastTokenUpdate': FieldValue.serverTimestamp(),
+        });
+        print('Device token saved for user: ${user.uid}');
+      }
+    } catch (e) {
+      print('Error saving device token: $e');
+    }
   }
 }

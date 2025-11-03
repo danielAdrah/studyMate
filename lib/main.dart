@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
+import 'services/assignment_service.dart';
 import 'view/auth_view/auth_gate.dart';
 
 void main() async {
@@ -19,6 +20,9 @@ void main() async {
 
   // Initialize SharedPreferences
   await SharedPreferences.getInstance();
+
+  // Initialize services
+  Get.put(AssignmentService());
 
   runApp(const MyApp());
 }

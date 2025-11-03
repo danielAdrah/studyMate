@@ -270,4 +270,292 @@ class NotificationService {
   Future<void> cancelNotifications() async {
     await notificationsPlugin.cancelAll();
   }
+
+  // Send notifications to all group members for session creation
+  Future<void> sendSessionNotificationToGroupMembers({
+    required String groupId,
+    required String sessionTitle,
+    required String organizerName,
+    required DateTime startTime,
+  }) async {
+    try {
+      // Get group details and member IDs
+      final groupDoc =
+          await firestore.collection('study_groups').doc(groupId).get();
+      if (!groupDoc.exists) return;
+
+      final groupData = groupDoc.data() as Map<String, dynamic>;
+      final groupName = groupData['name'] as String;
+      final memberIds = List<String>.from(groupData['memberIds']);
+      final currentUserID = FirebaseAuth.instance.currentUser!.uid;
+
+      final notificationTitle = 'New Study Session Created';
+      final notificationBody =
+          '$organizerName created a new session "$sessionTitle" in $groupName';
+
+      // Send local notification to current user (session creator)
+      await showNotification(
+        title: notificationTitle,
+        body: 'You created a new session: $sessionTitle',
+      );
+
+      // Send notifications to all other group members
+      for (final memberId in memberIds) {
+        if (memberId != currentUserID) {
+          // Get member's device token
+          final userDoc =
+              await firestore.collection('users').doc(memberId).get();
+          if (userDoc.exists) {
+            final userData = userDoc.data() as Map<String, dynamic>;
+            final deviceToken = userData['deviceToken'] as String?;
+
+            // Send Firebase messaging notification if device token exists
+            if (deviceToken != null && deviceToken.isNotEmpty) {
+              await sendNotifications(
+                notificationBody,
+                notificationTitle,
+                deviceToken,
+              );
+            }
+
+            // Store notification in Firestore for the member
+            await firestore
+                .collection('users')
+                .doc(memberId)
+                .collection('notifications')
+                .add({
+              'title': notificationTitle,
+              'body': notificationBody,
+              'groupId': groupId,
+              'sessionTitle': sessionTitle,
+              'organizerName': organizerName,
+              'startTime': Timestamp.fromDate(startTime),
+              'timestamp': FieldValue.serverTimestamp(),
+              'isRead': false,
+              'type': 'session_created',
+            });
+          }
+        }
+      }
+    } catch (e) {
+      print('Error sending session notifications: $e');
+      rethrow;
+    }
+  }
+
+  // Schedule notifications for when session starts
+  Future<void> scheduleSessionStartNotifications({
+    required String sessionId,
+    required String groupId,
+    required String sessionTitle,
+    required DateTime startTime,
+    required List<String> participantIds,
+  }) async {
+    try {
+      // Get group details
+      final groupDoc =
+          await firestore.collection('study_groups').doc(groupId).get();
+      if (!groupDoc.exists) return;
+
+      final groupData = groupDoc.data() as Map<String, dynamic>;
+      final groupName = groupData['name'] as String;
+
+      // Calculate notification time (5 minutes before session starts)
+      final reminderTime = startTime.subtract(const Duration(minutes: 5));
+      final now = DateTime.now();
+
+      // Only schedule if the reminder time is in the future
+      if (reminderTime.isAfter(now)) {
+        // Schedule reminder notification (5 minutes before)
+        await _scheduleSessionReminder(
+          sessionId: sessionId,
+          sessionTitle: sessionTitle,
+          groupName: groupName,
+          reminderTime: reminderTime,
+          participantIds: participantIds,
+        );
+      }
+
+      // Only schedule start notification if session start time is in the future
+      if (startTime.isAfter(now)) {
+        // Schedule session start notification
+        await _scheduleSessionStart(
+          sessionId: sessionId,
+          sessionTitle: sessionTitle,
+          groupName: groupName,
+          startTime: startTime,
+          participantIds: participantIds,
+        );
+      }
+    } catch (e) {
+      print('Error scheduling session notifications: $e');
+      rethrow;
+    }
+  }
+
+  // Private method to schedule session reminder (5 minutes before)
+  Future<void> _scheduleSessionReminder({
+    required String sessionId,
+    required String sessionTitle,
+    required String groupName,
+    required DateTime reminderTime,
+    required List<String> participantIds,
+  }) async {
+    try {
+      final notificationId =
+          sessionId.hashCode + 1000; // Unique ID for reminder
+      final title = 'Study Session Reminder';
+      final body = '"$sessionTitle" in $groupName starts in 5 minutes!';
+
+      // Schedule local notification for reminder
+      await scheduleNotification(
+        id: notificationId,
+        title: title,
+        body: body,
+        hour: reminderTime.hour,
+        minute: reminderTime.minute,
+      );
+
+      // Send immediate Firebase push notifications to all participants
+      for (final participantId in participantIds) {
+        // Get participant's device token
+        final userDoc =
+            await firestore.collection('users').doc(participantId).get();
+        if (userDoc.exists) {
+          final userData = userDoc.data() as Map<String, dynamic>;
+          final deviceToken = userData['deviceToken'] as String?;
+
+          // Send Firebase messaging notification if device token exists
+          if (deviceToken != null && deviceToken.isNotEmpty) {
+            // Note: This sends the notification immediately, not scheduled
+            // For truly scheduled Firebase notifications, you'd need Cloud Functions
+            await sendNotifications(
+              body,
+              title,
+              deviceToken,
+            );
+          }
+        }
+
+        // Store scheduled notification info in Firestore
+        await firestore
+            .collection('users')
+            .doc(participantId)
+            .collection('scheduled_notifications')
+            .doc('${sessionId}_reminder')
+            .set({
+          'sessionId': sessionId,
+          'title': title,
+          'body': body,
+          'scheduledTime': Timestamp.fromDate(reminderTime),
+          'type': 'session_reminder',
+          'notificationId': notificationId,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      print('Error scheduling session reminder: $e');
+    }
+  }
+
+  // Private method to schedule session start notification
+  Future<void> _scheduleSessionStart({
+    required String sessionId,
+    required String sessionTitle,
+    required String groupName,
+    required DateTime startTime,
+    required List<String> participantIds,
+  }) async {
+    try {
+      final notificationId =
+          sessionId.hashCode + 2000; // Unique ID for start notification
+      final title = 'Study Session Started';
+      final body =
+          '"$sessionTitle" in $groupName is starting now! Join your group.';
+
+      // Schedule local notification for session start
+      await scheduleNotification(
+        id: notificationId,
+        title: title,
+        body: body,
+        hour: startTime.hour,
+        minute: startTime.minute,
+      );
+
+      // Send immediate Firebase push notifications to all participants
+      for (final participantId in participantIds) {
+        // Get participant's device token
+        final userDoc =
+            await firestore.collection('users').doc(participantId).get();
+        if (userDoc.exists) {
+          final userData = userDoc.data() as Map<String, dynamic>;
+          final deviceToken = userData['deviceToken'] as String?;
+
+          // Send Firebase messaging notification if device token exists
+          if (deviceToken != null && deviceToken.isNotEmpty) {
+            // Note: This sends the notification immediately, not scheduled
+            // For truly scheduled Firebase notifications, you'd need Cloud Functions
+            await sendNotifications(
+              body,
+              title,
+              deviceToken,
+            );
+          }
+        }
+
+        // Store scheduled notification info in Firestore
+        await firestore
+            .collection('users')
+            .doc(participantId)
+            .collection('scheduled_notifications')
+            .doc('${sessionId}_start')
+            .set({
+          'sessionId': sessionId,
+          'title': title,
+          'body': body,
+          'scheduledTime': Timestamp.fromDate(startTime),
+          'type': 'session_start',
+          'notificationId': notificationId,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      print('Error scheduling session start notification: $e');
+    }
+  }
+
+  // Cancel scheduled notifications for a session
+  Future<void> cancelSessionNotifications(String sessionId) async {
+    try {
+      final reminderNotificationId = sessionId.hashCode + 1000;
+      final startNotificationId = sessionId.hashCode + 2000;
+
+      // Cancel the scheduled local notifications
+      await notificationsPlugin.cancel(reminderNotificationId);
+      await notificationsPlugin.cancel(startNotificationId);
+
+      // Remove from Firestore scheduled notifications
+      final currentUserID = FirebaseAuth.instance.currentUser!.uid;
+      final batch = firestore.batch();
+
+      final reminderRef = firestore
+          .collection('users')
+          .doc(currentUserID)
+          .collection('scheduled_notifications')
+          .doc('${sessionId}_reminder');
+
+      final startRef = firestore
+          .collection('users')
+          .doc(currentUserID)
+          .collection('scheduled_notifications')
+          .doc('${sessionId}_start');
+
+      batch.delete(reminderRef);
+      batch.delete(startRef);
+
+      await batch.commit();
+    } catch (e) {
+      print('Error cancelling session notifications: $e');
+    }
+  }
 }

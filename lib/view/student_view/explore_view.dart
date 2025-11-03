@@ -4,7 +4,6 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../common_widgets/course_cell.dart';
 import '../../common_widgets/custom_app_bar.dart';
@@ -39,6 +38,7 @@ class _ExploreViewState extends State<ExploreView> {
 
   @override
   Widget build(BuildContext context) {
+    final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: TColor.background,
       body: SafeArea(
@@ -47,7 +47,6 @@ class _ExploreViewState extends State<ExploreView> {
             SliverAppBar(
               expandedHeight: 170,
               floating: true,
-              pinned: true,
               backgroundColor: TColor.background,
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
@@ -122,7 +121,7 @@ class _ExploreViewState extends State<ExploreView> {
                     const SizedBox(height: 20),
                     FadeInDown(
                       delay: const Duration(milliseconds: 700),
-                      child: _buildProfessorsList(),
+                      child: _buildProfessorsList(height * 0.25),
                     ),
                     const SizedBox(height: 40),
                   ],
@@ -257,9 +256,9 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   // Enhanced Professors List
-  Widget _buildProfessorsList() {
+  Widget _buildProfessorsList(double height) {
     return SizedBox(
-      height: 200,
+      height: height,
       child: StreamBuilder(
         stream: controller.getProfessorStream(),
         builder: (context, snapshot) {

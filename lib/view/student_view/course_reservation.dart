@@ -42,6 +42,7 @@ class _CourseReservationState extends State<CourseReservation>
   final min = TextEditingController();
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
+  bool isBooking = false; // Add loading state
 
   void updateDateTime(DateTime date, TimeOfDay time) {
     setState(() {
@@ -652,6 +653,9 @@ class _CourseReservationState extends State<CourseReservation>
               _controller.reverse();
             },
             onTap: () async {
+              // Prevent multiple taps while booking
+              if (isBooking) return;
+
               // Validate that all fields are filled
               if (selectedProfessor == null) {
                 Get.snackbar(
@@ -664,21 +668,28 @@ class _CourseReservationState extends State<CourseReservation>
                 return;
               }
 
-              // Check if user has already booked this course
-              final hasBooked =
-                  await storeController.hasUserBookedCourse(widget.courseID);
-              if (hasBooked) {
-                Get.snackbar(
-                  "Already Booked",
-                  "You have already booked this course",
-                  backgroundColor: TColor.warning,
-                  colorText: Colors.white,
-                  duration: Duration(seconds: 3),
-                );
-                return;
+              // Set loading state
+              if (mounted) {
+                setState(() {
+                  isBooking = true;
+                });
               }
 
               try {
+                // Check if user has already booked this course
+                final hasBooked =
+                    await storeController.hasUserBookedCourse(widget.courseID);
+                if (hasBooked) {
+                  Get.snackbar(
+                    "Already Booked",
+                    "You have already booked this course",
+                    backgroundColor: TColor.warning,
+                    colorText: Colors.white,
+                    duration: Duration(seconds: 3),
+                  );
+                  return;
+                }
+
                 // Call the reservation logic from StoreController
                 await storeController.reserveCourse(
                   widget.courseName,
@@ -732,6 +743,28 @@ class _CourseReservationState extends State<CourseReservation>
                     hour: selectedTime.hour,
                     minute: selectedTime.minute,
                   );
+
+                  // Store notification in Firebase for display in notification view
+                  await storeController.createNotification(
+                    userId: auth.currentUser!.uid,
+                    title: "Upcoming Course: ${widget.courseName}",
+                    body:
+                        "Don't forget your course with $selectedProfessor on ${_formatDate(selectedDate)} at ${_formatTime(selectedTime)}",
+                    courseId: widget.courseID,
+                    courseName: widget.courseName,
+                    courseField: widget.courseField,
+                    professor: selectedProfessor,
+                    scheduledDate: DateTime(
+                      selectedDate.year,
+                      selectedDate.month,
+                      selectedDate.day,
+                      selectedTime.hour,
+                      selectedTime.minute,
+                    ),
+                    type: 'course_reminder',
+                    // notificationId:
+                  );
+
                   print(
                       "Scheduled notification for course: ${widget.courseName}");
                 } catch (e) {
@@ -744,6 +777,66 @@ class _CourseReservationState extends State<CourseReservation>
                     duration: Duration(seconds: 3),
                   );
                 }
+
+                // Send Firebase notification to the selected professor
+                try {
+                  // Get current student name
+                  final currentUserName =
+                      await storeController.getCurrentUserName();
+
+                  // Get professor's device token
+                  final professorToken = await storeController
+                      .getProfessorDeviceToken(selectedProfessor!);
+
+                  if (professorToken != null && professorToken.isNotEmpty) {
+                    // Send notification to professor
+                    await notiService.sendNotifications(
+                      "New course booking from $currentUserName for ${widget.courseName} on ${_formatDate(selectedDate)} at ${_formatTime(selectedTime)}",
+                      "New Course Booking",
+                      professorToken,
+                    );
+
+                    // Also store notification in professor's Firebase for in-app display
+                    final professorUserId = await storeController
+                        .getProfessorUserId(selectedProfessor!);
+                    if (professorUserId != null) {
+                      await storeController.createNotification(
+                        userId: professorUserId,
+                        title: "New Course Booking",
+                        body:
+                            "$currentUserName has booked your ${widget.courseName} course for ${_formatDate(selectedDate)} at ${_formatTime(selectedTime)}",
+                        courseId: widget.courseID,
+                        courseName: widget.courseName,
+                        courseField: widget.courseField,
+                        professor: selectedProfessor,
+                        scheduledDate: DateTime(
+                          selectedDate.year,
+                          selectedDate.month,
+                          selectedDate.day,
+                          selectedTime.hour,
+                          selectedTime.minute,
+                        ),
+                        type: 'course_booking',
+                      );
+                    }
+
+                    print(
+                        "Firebase notification sent to professor: $selectedProfessor");
+                  } else {
+                    print("Professor device token not found or empty");
+                    // Show warning to user but don't prevent booking
+                    Get.snackbar(
+                      "Professor Notification",
+                      "Course booked successfully, but couldn't notify professor",
+                      backgroundColor: TColor.warning,
+                      colorText: Colors.white,
+                      duration: Duration(seconds: 3),
+                    );
+                  }
+                } catch (e) {
+                  print("Failed to send notification to professor: $e");
+                  // Don't show error to user as booking was successful
+                }
               } catch (e) {
                 Get.snackbar(
                   "Error",
@@ -752,6 +845,13 @@ class _CourseReservationState extends State<CourseReservation>
                   colorText: Colors.white,
                   duration: Duration(seconds: 3),
                 );
+              } finally {
+                // Reset loading state
+                if (mounted) {
+                  setState(() {
+                    isBooking = false;
+                  });
+                }
               }
             },
             child: ScaleTransition(
@@ -772,14 +872,25 @@ class _CourseReservationState extends State<CourseReservation>
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
-                  child: Text(
-                    "Book Course",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: isBooking
+                      ? SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          "Book Course",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
             ),

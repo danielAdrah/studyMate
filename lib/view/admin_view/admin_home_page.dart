@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../theme.dart';
 import 'courses_tab.dart';
-import 'professors_tab.dart';
+import 'users_tab.dart';
 import 'reports_tab.dart';
 
 class AdminHomePage extends StatefulWidget {
@@ -19,7 +19,7 @@ class AdminHomePage extends StatefulWidget {
 class _AdminHomePageState extends State<AdminHomePage> {
   int selectTab = 0;
   PageStorageBucket pageStorageBucket = PageStorageBucket();
-  Widget currentTabView = ProfessorsTab();
+  Widget currentTabView = UsersTab();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +40,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 onPressed: () {
                   setState(() {
                     selectTab = 0;
-                    currentTabView = ProfessorsTab();
+                    currentTabView = UsersTab();
                   });
                 },
                 icon: Column(

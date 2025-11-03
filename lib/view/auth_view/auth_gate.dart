@@ -3,7 +3,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:studymate/services/user_service.dart';
-import 'package:studymate/view/auth_view/cover_page.dart';
 import 'package:studymate/view/professor_view/professor_main_nav_bar.dart';
 import 'package:studymate/view/student_view/student_main_nav_bar.dart';
 
@@ -33,7 +32,7 @@ class _AuthGateState extends State<AuthGate> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CoverPage();
+            return const LogIn();
           }
 
           if (!snapshot.hasData) {
@@ -45,14 +44,14 @@ class _AuthGateState extends State<AuthGate> {
             future: _userService.getUserRole(),
             builder: (context, roleSnapshot) {
               if (roleSnapshot.connectionState == ConnectionState.waiting) {
-                return const CoverPage();
+                return const LogIn();
               }
 
               final String? role = roleSnapshot.data;
 
               if (role == null) {
                 print('User does not have a role');
-                return const CoverPage();
+                return const LogIn();
               }
 
               switch (role) {
@@ -64,7 +63,7 @@ class _AuthGateState extends State<AuthGate> {
                   return const AdminHomePage();
                 default:
                   print('Unknown role: $role');
-                  return const CoverPage();
+                  return const LogIn();
               }
             },
           );
